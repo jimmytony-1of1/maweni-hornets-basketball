@@ -1,4 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maweni Hornets Basketball</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -1161,9 +1162,14 @@
         <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Manage Gallery</div>
         <div class="admin-card" style="border-style:dashed;margin-bottom:16px;">
           <div style="font-weight:700;margin-bottom:12px;color:var(--orange);">➕ Add Photo</div>
-          <div class="admin-field">
-            <div class="admin-label">Image URL</div>
-            <input class="admin-input" id="gal-url" placeholder="https://… (paste a direct image link)">
+          <div class="admin-photo-row">
+            <img id="gal-photo-preview" class="admin-photo-thumb" style="border-radius:6px;display:none;">
+            <div id="gal-photo-placeholder" class="admin-photo-placeholder" style="border-radius:6px;">📷</div>
+            <div class="admin-photo-controls">
+              <div class="admin-label">Photo</div>
+              <input type="file" accept="image/*" id="gal-photo-file" onchange="previewGalleryPhoto(this)">
+              <button type="button" id="gal-photo-remove-btn" class="admin-photo-remove" style="display:none;" onclick="clearGalleryPhotoSelection()">Remove photo</button>
+            </div>
           </div>
           <div class="admin-row">
             <div class="admin-field">
@@ -2313,17 +2319,41 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Admin gallery
+var newGalleryPhotoData = '';
+
+function previewGalleryPhoto(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { alert('Image too large — please choose a photo under 2MB.'); input.value = ''; return; }
+  readAndResizeImage(file, 500, function(dataUrl) {
+    newGalleryPhotoData = dataUrl;
+    var img = document.getElementById('gal-photo-preview');
+    var placeholder = document.getElementById('gal-photo-placeholder');
+    var removeBtn = document.getElementById('gal-photo-remove-btn');
+    img.src = dataUrl; img.style.display = 'block';
+    if (placeholder) placeholder.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'block';
+  });
+}
+
+function clearGalleryPhotoSelection() {
+  newGalleryPhotoData = '';
+  document.getElementById('gal-photo-file').value = '';
+  document.getElementById('gal-photo-preview').style.display = 'none';
+  document.getElementById('gal-photo-placeholder').style.display = 'flex';
+  document.getElementById('gal-photo-remove-btn').style.display = 'none';
+}
+
 function addGalleryPhoto() {
-  var url = document.getElementById('gal-url').value.trim();
   var caption = document.getElementById('gal-caption').value.trim();
   var cat = document.getElementById('gal-cat').value;
-  if (!url) { alert('Please enter an image URL.'); return; }
+  if (!newGalleryPhotoData) { alert('Please choose a photo to upload.'); return; }
   var d = getData();
   if (!d.photos) d.photos = [];
-  d.photos.push({ url: url, caption: caption || 'Game Photo', cat: cat });
+  d.photos.push({ url: newGalleryPhotoData, caption: caption || 'Game Photo', cat: cat });
   saveData(d);
-  document.getElementById('gal-url').value = '';
   document.getElementById('gal-caption').value = '';
+  clearGalleryPhotoSelection();
   renderAdminGallery();
   renderGallery();
   toast('📸 Photo added!');

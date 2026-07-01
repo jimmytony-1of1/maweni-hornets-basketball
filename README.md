@@ -1,1 +1,1 @@
-# maweni-hornets-site
+# maweni-hornets-basketball

@@ -2281,8 +2281,7 @@ function changePassword() {
 }
 
 // Apply saved data on page load
-window.addEventListener('load', async function() {
-  cachedData = await loadDataFromSupabase();
+function renderAllFromData() {
   var d = getData();
   if (d.newsTitle) applyHeadlineToSite(d);
   if (d.till) { var el = document.getElementById('mpesa-till'); if(el) el.textContent = d.till.split('').join(' '); }
@@ -2290,11 +2289,25 @@ window.addEventListener('load', async function() {
   renderGamesOnSite();
   if (d.products && d.products.length) renderStoreFromData();
   renderGallery();
-  // New: render home page dynamic sections
   renderHomeUpcoming();
   applyLiveScoreToSite(d.liveScore, d.liveScoreOn);
   if (d.recap) applyRecapToSite(d.recap);
   else if (!d.newsTitle) { var card = document.getElementById('home-recap-card'); if(card) card.style.display='none'; }
+}
+
+window.addEventListener('load', async function() {
+  cachedData = await loadDataFromSupabase();
+  renderAllFromData();
+
+  // Live updates: whenever anyone (admin) saves a change, every open tab
+  // automatically re-fetches the latest data and re-renders, no refresh needed.
+  supabaseClient
+    .channel('site_data_live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'site_data' }, async function() {
+      cachedData = await loadDataFromSupabase();
+      renderAllFromData();
+    })
+    .subscribe();
 });
 
 // ---- GALLERY ----
@@ -2456,3 +2469,5 @@ function mobileNav(page) {
 }
 
 </script>
+   
+

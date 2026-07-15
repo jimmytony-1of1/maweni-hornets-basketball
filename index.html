@@ -451,18 +451,18 @@
       </div>
     </div>
 
-    <div class="featured-game" id="liveGame">
+    <div class="featured-game" id="liveGame" style="display:none">
       <div class="team-score">
-        <div class="team-abbr" style="color:var(--orange)" id="live-home-display">MHB</div>
-        <div class="team-score-num" id="score1">112</div>
+        <div class="team-abbr" style="color:var(--orange)" id="live-home-display"></div>
+        <div class="team-score-num" id="score1"></div>
       </div>
       <div class="score-divider">
-        <div class="badge badge-live" id="live-badge-display">FINAL</div>
-        <div class="score-quarter" style="margin-top:6px" id="live-period-display">4th Quarter</div>
+        <div class="badge badge-live" id="live-badge-display"></div>
+        <div class="score-quarter" style="margin-top:6px" id="live-period-display"></div>
       </div>
       <div class="team-score team-b">
-        <div class="team-score-num" id="score2">98</div>
-        <div class="team-abbr" style="color:var(--steel)" id="live-away-display">NRB</div>
+        <div class="team-score-num" id="score2"></div>
+        <div class="team-abbr" style="color:var(--steel)" id="live-away-display"></div>
       </div>
     </div>
 
@@ -2142,7 +2142,7 @@ function saveLiveScore() {
 function applyLiveScoreToSite(ls, on) {
   var banner = document.getElementById('liveGame');
   if (!banner) return;
-  if (!ls) return;
+  if (!ls || !on) { banner.style.display = 'none'; return; }
   if (document.getElementById('live-home-display')) document.getElementById('live-home-display').textContent = ls.homeAbbr || 'MHB';
   if (document.getElementById('live-away-display')) document.getElementById('live-away-display').textContent = ls.awayAbbr || 'NRB';
   if (document.getElementById('score1')) document.getElementById('score1').textContent = ls.score1 !== '' ? ls.score1 : '0';
@@ -2153,7 +2153,7 @@ function applyLiveScoreToSite(ls, on) {
     badgeEl.textContent = ls.badge || 'LIVE';
     badgeEl.className = 'badge ' + (ls.badge === 'LIVE' ? 'badge-live' : 'badge-upcoming');
   }
-  banner.style.display = on ? 'flex' : 'none';
+  banner.style.display = 'flex';
 }
 
 // ---- GAME RECAP ----

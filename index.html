@@ -529,12 +529,12 @@
       </div>
       <div class="section-header"><div class="section-title" style="font-size:18px">Coaching Staff</div></div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
-        <div class="game-row"><div><div style="font-weight:600">Team Manager Fredrick Oduor</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Team Manager</div></div><span class="badge badge-upcoming">Team Manager</span></div>
-        <div class="game-row"><div><div style="font-weight:600">Patron Victor Nyongesa</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Patron</div></div><span class="badge badge-upcoming">Patron</span></div>
-        <div class="game-row"><div><div style="font-weight:600">Organizing Secretary Dennis Odour</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Organizing Secretary</div></div><span class="badge badge-upcoming">Head Coach</span></div>
-        <div class="game-row"><div><div style="font-weight:600">Coach Cyrus Barongo</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Head Coach</div></div><span class="badge badge-upcoming">Head Coach</span></div>
-        <div class="game-row"><div><div style="font-weight:600">Assistant Coach Paul Mukhwana</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
-        <div class="game-row"><div><div style="font-weight:600">Assistant Coach Mark Viduka</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Team Manager</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Manager</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Manager</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Patron</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Patron</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Patron</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Organizing Secretary</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Org. Sec</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Org. Sec</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Coach Paul Mukhwana</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Head Coach</div></div><span class="badge badge-upcoming">Head Coach</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Cyrus Barongo</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
              </div>
       <div class="section-header"><div class="section-title" style="font-size:18px">Full Roster</div></div>
       <table class="standings-table">
@@ -869,6 +869,7 @@
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchAdminTab('games')">🏀 Games</button>
         <button class="admin-tab" onclick="switchAdminTab('players')">👤 Players</button>
+        <button class="admin-tab" onclick="switchAdminTab('veterans')">🎖️ Veterans</button>
         <button class="admin-tab" onclick="switchAdminTab('store')">🛍️ Store</button>
         <button class="admin-tab" onclick="switchAdminTab('settings')">⚙️ Settings</button>
         <button class="admin-tab" onclick="switchAdminTab('gallery')">📸 Gallery</button>
@@ -1108,6 +1109,32 @@
             <div class="admin-field"><div class="admin-label">RPG</div><input class="admin-input" id="new-p-rpg" type="number" step="0.1" placeholder="0"></div>
           </div>
           <button class="btn-primary" onclick="addPlayer()" style="margin-top:8px;">➕ Add Player</button>
+        </div>
+      </div>
+
+      <!-- VETERANS TAB -->
+      <div class="admin-section" id="atab-veterans">
+        <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Manage Veterans</div>
+        <div id="admin-veterans-list"></div>
+        <div class="admin-card" style="border-style:dashed;">
+          <div style="font-weight:700;margin-bottom:12px;color:var(--orange);">➕ Add Veteran</div>
+          <div class="admin-row">
+            <div class="admin-field"><div class="admin-label">No.</div><input class="admin-input" id="new-v-num" type="number" placeholder="23"></div>
+            <div class="admin-field"><div class="admin-label">Name</div><input class="admin-input" id="new-v-name" placeholder="J. Mwangi"></div>
+          </div>
+          <div class="admin-row">
+            <div class="admin-field"><div class="admin-label">Position</div>
+              <select class="admin-input" id="new-v-pos">
+                <option>Point Guard</option>
+                <option>Shooting Guard</option>
+                <option>Small Forward</option>
+                <option>Power Forward</option>
+                <option>Center</option>
+              </select>
+            </div>
+            <div class="admin-field"><div class="admin-label">Height</div><input class="admin-input" id="new-v-height" placeholder="6'2&quot;"></div>
+          </div>
+          <button class="btn-primary" onclick="addVeteran()" style="margin-top:8px;">➕ Add Veteran</button>
         </div>
       </div>
 
@@ -1473,7 +1500,7 @@ function confirmMpesaOrder() {
     + '*Address:* ' + (address || 'TBD') + '\n\n'
     + '✅ *M-Pesa Code:* ' + code + '\n\n'
     + 'Payment done! Please confirm my order. Thank you! 🙏';
-  var wa = 'https://wa.me/254797103734?text=' + encodeURIComponent(msg);
+  var wa = 'https://wa.me/254746305373?text=' + encodeURIComponent(msg);
   closeMpesa();
   window.open(wa, '_blank');
 }
@@ -1625,6 +1652,7 @@ function loadAdminData() {
   renderAdminProducts();
   renderAdminGames();
   renderAdminPlayers();
+  renderAdminVeterans();
   loadSettings();
   loadNewsAdmin();
   renderAdminGallery();
@@ -1958,6 +1986,63 @@ function renderPlayersOnSite() {
   }
 }
 
+// ---- VETERANS ----
+function getVeterans() {
+  var d = getData();
+  if (!d.veterans) d.veterans = [];
+  return d.veterans;
+}
+
+function renderAdminVeterans() {
+  var veterans = getVeterans();
+  var html = '';
+  veterans.forEach(function(v, i) {
+    html += '<div class="admin-card"><div class="admin-card-header"><div class="admin-card-title">#'+v.num+' '+v.name+'</div><button class="btn-danger" onclick="deleteVeteran('+i+')">🗑</button></div>'
+      + '<div class="admin-row">'
+      + '<div class="admin-field"><div class="admin-label">No.</div><input class="admin-input" type="number" value="'+v.num+'" onchange="updateVeteran('+i+',\'num\',parseInt(this.value))"></div>'
+      + '<div class="admin-field"><div class="admin-label">Name</div><input class="admin-input" value="'+v.name+'" onchange="updateVeteran('+i+',\'name\',this.value)"></div>'
+      + '</div><div class="admin-row">'
+      + '<div class="admin-field"><div class="admin-label">Position</div><select class="admin-input" onchange="updateVeteran('+i+',\'pos\',this.value)"><option'+(v.pos==='Point Guard'?' selected':'')+'>Point Guard</option><option'+(v.pos==='Shooting Guard'?' selected':'')+'>Shooting Guard</option><option'+(v.pos==='Small Forward'?' selected':'')+'>Small Forward</option><option'+(v.pos==='Power Forward'?' selected':'')+'>Power Forward</option><option'+(v.pos==='Center'?' selected':'')+'>Center</option></select></div>'
+      + '<div class="admin-field"><div class="admin-label">Height</div><input class="admin-input" value="'+v.height+'" onchange="updateVeteran('+i+',\'height\',this.value)"></div>'
+      + '</div>';
+  });
+  var el = document.getElementById('admin-veterans-list');
+  if (el) el.innerHTML = html;
+}
+
+function updateVeteran(i,key,val) {
+  var d=getData(); var veterans=getVeterans(); veterans[i][key]=val; d.veterans=veterans; saveData(d);
+  toast('✅ Veteran updated!'); renderVeteransOnSite();
+}
+function deleteVeteran(i) {
+  if (!confirm('Remove this veteran?')) return;
+  var d=getData(); var veterans=getVeterans(); veterans.splice(i,1); d.veterans=veterans; saveData(d);
+  renderAdminVeterans(); renderVeteransOnSite(); toast('🗑 Veteran removed.','#e25555');
+}
+function addVeteran() {
+  var num=parseInt(document.getElementById('new-v-num').value);
+  var name=document.getElementById('new-v-name').value.trim();
+  var pos=document.getElementById('new-v-pos').value;
+  var height=document.getElementById('new-v-height').value.trim();
+  if (!name||!num) { alert('Please enter number and name.'); return; }
+  var d=getData(); var veterans=getVeterans();
+  veterans.push({num,name,pos,height:height||"N/A"});
+  d.veterans=veterans; saveData(d);
+  document.getElementById('new-v-num').value='';
+  document.getElementById('new-v-name').value='';
+  document.getElementById('new-v-height').value='';
+  renderAdminVeterans(); renderVeteransOnSite(); toast('✅ Veteran added!');
+}
+function renderVeteransOnSite() {
+  var veterans = getVeterans();
+  var tbody = document.querySelector('#page-veterans .standings-table tbody');
+  if (tbody) {
+    tbody.innerHTML = veterans.map(function(v) {
+      return '<tr><td class="rank" style="color:var(--orange)">' + v.num + '</td><td style="color:var(--orange)">' + v.name + '</td><td style="color:var(--orange)">' + v.pos + '</td><td style="color:var(--orange)">' + v.height + '</td></tr>';
+    }).join('');
+  }
+}
+
 // ---- NEWS (legacy - kept for backward compat) ----
 function loadNewsAdmin() {
   var d = getData();
@@ -2260,6 +2345,7 @@ function renderAllFromData() {
   if (d.newsTitle) applyHeadlineToSite(d);
   if (d.till) { var el = document.getElementById('mpesa-till'); if(el) el.textContent = d.till.split('').join(' '); }
   renderPlayersOnSite();
+  renderVeteransOnSite();
   renderGamesOnSite();
   if (d.products && d.products.length) renderStoreFromData();
   renderGallery();

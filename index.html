@@ -409,6 +409,7 @@
       <div class="nav-link" onclick="showPage('schedule')">Schedule</div>
       <div class="nav-link" onclick="showPage('teams')">Teams</div>
       <div class="nav-link" onclick="showPage('players')">Players</div>
+      <div class="nav-link" onclick="showPage('veterans')">Veterans</div>
       <div class="nav-link" onclick="showPage('store')">Store</div>
       <div class="nav-link" onclick="showPage('gallery')">Gallery</div>
       <div class="nav-link" onclick="showPage('contact')">Contact</div>
@@ -437,10 +438,10 @@
 
   <!-- HOME PAGE -->
   <div class="page active" id="page-home">
-    <div class="hero">
+    <div class="hero" style="display:flex; align-items:center; gap:40px; flex-wrap:wrap;">
       <div class="hero-dots"></div>
       <div class="hero-accent"></div>
-      <div class="hero-content">
+      <div class="hero-content" style="flex:1; min-width:280px;">
         <div class="hero-eyebrow">2025 – 26 Season · Mombasa Basketball League</div>
         <div class="hero-title">MAWENI<br><span>HORNETS</span><br>BASKETBALL</div>
         <div class="hero-desc">Mombasa's finest. Built on grit, speed, and community — the Hornets are hunting a championship title this season.</div>
@@ -448,6 +449,9 @@
           <button class="btn-primary" onclick="showPage('schedule')">View Schedule</button>
           <button class="btn-primary" onclick="showPage('teams')">Meet the Team</button>
         </div>
+      </div>
+      <div style="flex:1; min-width:280px; position:relative; z-index:1;">
+        <img src="team-photo.jpg" alt="Maweni Hornets team" style="width:100%; height:auto; border-radius:12px; display:block; object-fit:cover;">
       </div>
     </div>
 
@@ -525,8 +529,11 @@
       </div>
       <div class="section-header"><div class="section-title" style="font-size:18px">Coaching Staff</div></div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
-        <div class="game-row"><div><div style="font-weight:600">Coach Cyrus Barongo</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Head Coach</div></div><span class="badge badge-upcoming">Head Coach</span></div>
-        <div class="game-row"><div><div style="font-weight:600">Coach Paul Mukhkwana</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Team Manager</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Manager</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Patron</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Patron</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Coach Paul Mukhwana</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Head Coach</div></div><span class="badge badge-upcoming">Head Coach</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Cyrus Barongo</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
+        <div class="game-row"><div><div style="font-weight:600">Assistant Coach</div></div><span class="badge" style="background:rgba(138,155,176,0.15);color:var(--orange)">Assistant</span></div>
              </div>
       <div class="section-header"><div class="section-title" style="font-size:18px">Full Roster</div></div>
       <table class="standings-table">
@@ -552,6 +559,18 @@
     <div class="section">
       <div class="section-header"><div class="section-title">Players</div><div style="font-size:13px;color:var(--steel)">2024–25 Roster</div></div>
       <div class="player-grid" id="players-grid"></div>
+    </div>
+  </div>
+
+  <!-- VETERANS PAGE -->
+  <div class="page" id="page-veterans">
+    <div class="section">
+      <div class="section-header"><div class="section-title">Veterans</div></div>
+      <table class="standings-table">
+        <thead><tr><th>No.</th><th>Name</th><th>Position</th><th>Height</th></tr></thead>
+        <tbody>
+        </tbody>
+      </table>
     </div>
   </div>
 

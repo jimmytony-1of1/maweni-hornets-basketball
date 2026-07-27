@@ -2483,22 +2483,25 @@ async function addGalleryPhoto() {
   if (!newGalleryPhotoFiles.length) { alert('Please choose at least one photo to upload.'); return; }
   var total = newGalleryPhotoFiles.length;
   toast('⏳ Uploading ' + total + ' photo' + (total>1?'s':'') + '...');
+  var uploadOne = async function(file, idx) {
+    var resizedDataUrl = await new Promise(function(resolve) {
+      readAndResizeImage(file, 500, resolve);
+    });
+    var blob = await (await fetch(resizedDataUrl)).blob();
+    var fileName = Date.now() + '-' + idx + '-' + Math.random().toString(36).slice(2) + '.jpg';
+    var uploadRes = await supabaseClient.storage.from('gallery').upload(fileName, blob, { contentType: 'image/jpeg' });
+    if (uploadRes.error) throw uploadRes.error;
+    var pub = supabaseClient.storage.from('gallery').getPublicUrl(fileName);
+    return { url: pub.data.publicUrl, caption: caption || 'Game Photo', cat: cat };
+  };
+  var results = await Promise.allSettled(newGalleryPhotoFiles.map(uploadOne));
   var d = getData();
   if (!d.photos) d.photos = [];
   var failCount = 0;
-  for (var idx = 0; idx < total; idx++) {
-    try {
-      var resizedDataUrl = await new Promise(function(resolve) {
-        readAndResizeImage(newGalleryPhotoFiles[idx], 500, resolve);
-      });
-      var blob = await (await fetch(resizedDataUrl)).blob();
-      var fileName = Date.now() + '-' + idx + '-' + Math.random().toString(36).slice(2) + '.jpg';
-      var uploadRes = await supabaseClient.storage.from('gallery').upload(fileName, blob, { contentType: 'image/jpeg' });
-      if (uploadRes.error) { failCount++; continue; }
-      var pub = supabaseClient.storage.from('gallery').getPublicUrl(fileName);
-      d.photos.push({ url: pub.data.publicUrl, caption: caption || 'Game Photo', cat: cat });
-    } catch (e) { failCount++; }
-  }
+  results.forEach(function(r) {
+    if (r.status === 'fulfilled') d.photos.push(r.value);
+    else failCount++;
+  });
   saveData(d);
   document.getElementById('gal-caption').value = '';
   clearGalleryPhotoSelection();

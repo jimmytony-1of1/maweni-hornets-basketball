@@ -1183,19 +1183,20 @@
       <div class="admin-section" id="atab-gallery">
         <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Manage Gallery</div>
         <div class="admin-card" style="border-style:dashed;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:12px;color:var(--orange);">➕ Add Photo</div>
+          <div style="font-weight:700;margin-bottom:12px;color:var(--orange);">➕ Add Photos (you can select several at once)</div>
           <div class="admin-photo-row">
             <img id="gal-photo-preview" class="admin-photo-thumb" style="border-radius:6px;display:none;">
             <div id="gal-photo-placeholder" class="admin-photo-placeholder" style="border-radius:6px;">📷</div>
             <div class="admin-photo-controls">
-              <div class="admin-label">Photo</div>
-              <input type="file" accept="image/*" id="gal-photo-file" onchange="previewGalleryPhoto(this)">
+              <div class="admin-label">Photos</div>
+              <input type="file" accept="image/*" id="gal-photo-file" multiple onchange="previewGalleryPhoto(this)">
               <button type="button" id="gal-photo-remove-btn" class="admin-photo-remove" style="display:none;" onclick="clearGalleryPhotoSelection()">Remove photo</button>
             </div>
           </div>
+          <div id="gal-multi-count" style="font-size:12px;color:var(--steel);margin-top:6px;"></div>
           <div class="admin-row">
             <div class="admin-field">
-              <div class="admin-label">Caption</div>
+              <div class="admin-label">Caption <span style="font-weight:400;color:var(--steel)">(applied to all selected photos)</span></div>
               <input class="admin-input" id="gal-caption" placeholder="e.g. Hornets vs Eagles · Mar 2025">
             </div>
             <div class="admin-field">
@@ -1208,7 +1209,13 @@
               </select>
             </div>
           </div>
-          <button class="btn-primary" onclick="addGalleryPhoto()" style="margin-top:8px;">📸 Add Photo</button>
+          <button class="btn-primary" onclick="addGalleryPhoto()" style="margin-top:8px;">📸 Upload Photo(s)</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <button class="btn-danger" onclick="deleteSelectedGalleryPhotos()">🗑 Delete Selected</button>
+          <button class="admin-tab" onclick="toggleAllGalleryPhotos(true)" style="padding:6px 12px;font-size:12px;">Select All</button>
+          <button class="admin-tab" onclick="toggleAllGalleryPhotos(false)" style="padding:6px 12px;font-size:12px;">Clear Selection</button>
+          <span id="gal-selected-count" style="font-size:12px;color:var(--steel);"></span>
         </div>
         <div id="admin-gallery-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;"></div>
       </div>
@@ -2440,12 +2447,17 @@ document.addEventListener('keydown', function(e) {
 // Admin gallery
 var newGalleryPhotoData = '';
 
+var newGalleryPhotoFiles = []; // holds multiple selected File objects
+
 function previewGalleryPhoto(input) {
-  var file = input.files[0];
-  if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { alert('Image too large — please choose a photo under 2MB.'); input.value = ''; return; }
-  readAndResizeImage(file, 500, function(dataUrl) {
-    newGalleryPhotoData = dataUrl;
+  var files = Array.from(input.files || []);
+  if (!files.length) return;
+  var tooBig = files.filter(function(f){ return f.size > 2 * 1024 * 1024; });
+  if (tooBig.length) { alert('One or more photos are over 2MB — please choose smaller photos.'); input.value = ''; return; }
+  newGalleryPhotoFiles = files;
+  var countEl = document.getElementById('gal-multi-count');
+  if (countEl) countEl.textContent = files.length + ' photo' + (files.length>1?'s':'') + ' selected';
+  readAndResizeImage(files[0], 500, function(dataUrl) {
     var img = document.getElementById('gal-photo-preview');
     var placeholder = document.getElementById('gal-photo-placeholder');
     var removeBtn = document.getElementById('gal-photo-remove-btn');
@@ -2456,36 +2468,68 @@ function previewGalleryPhoto(input) {
 }
 
 function clearGalleryPhotoSelection() {
-  newGalleryPhotoData = '';
+  newGalleryPhotoFiles = [];
   document.getElementById('gal-photo-file').value = '';
   document.getElementById('gal-photo-preview').style.display = 'none';
   document.getElementById('gal-photo-placeholder').style.display = 'flex';
   document.getElementById('gal-photo-remove-btn').style.display = 'none';
+  var countEl = document.getElementById('gal-multi-count');
+  if (countEl) countEl.textContent = '';
 }
 
 async function addGalleryPhoto() {
   var caption = document.getElementById('gal-caption').value.trim();
   var cat = document.getElementById('gal-cat').value;
-  if (!newGalleryPhotoData) { alert('Please choose a photo to upload.'); return; }
-  toast('⏳ Uploading photo...');
-  try {
-    var blob = await (await fetch(newGalleryPhotoData)).blob();
-    var fileName = Date.now() + '-' + Math.random().toString(36).slice(2) + '.jpg';
-    var uploadRes = await supabaseClient.storage.from('gallery').upload(fileName, blob, { contentType: 'image/jpeg' });
-    if (uploadRes.error) { alert('Upload failed: ' + uploadRes.error.message); return; }
-    var pub = supabaseClient.storage.from('gallery').getPublicUrl(fileName);
-    var d = getData();
-    if (!d.photos) d.photos = [];
-    d.photos.push({ url: pub.data.publicUrl, caption: caption || 'Game Photo', cat: cat });
-    saveData(d);
-    document.getElementById('gal-caption').value = '';
-    clearGalleryPhotoSelection();
-    renderAdminGallery();
-    renderGallery();
-    toast('📸 Photo added!');
-  } catch (e) {
-    alert('Upload error: ' + e.message);
+  if (!newGalleryPhotoFiles.length) { alert('Please choose at least one photo to upload.'); return; }
+  var total = newGalleryPhotoFiles.length;
+  toast('⏳ Uploading ' + total + ' photo' + (total>1?'s':'') + '...');
+  var d = getData();
+  if (!d.photos) d.photos = [];
+  var failCount = 0;
+  for (var idx = 0; idx < total; idx++) {
+    try {
+      var resizedDataUrl = await new Promise(function(resolve) {
+        readAndResizeImage(newGalleryPhotoFiles[idx], 500, resolve);
+      });
+      var blob = await (await fetch(resizedDataUrl)).blob();
+      var fileName = Date.now() + '-' + idx + '-' + Math.random().toString(36).slice(2) + '.jpg';
+      var uploadRes = await supabaseClient.storage.from('gallery').upload(fileName, blob, { contentType: 'image/jpeg' });
+      if (uploadRes.error) { failCount++; continue; }
+      var pub = supabaseClient.storage.from('gallery').getPublicUrl(fileName);
+      d.photos.push({ url: pub.data.publicUrl, caption: caption || 'Game Photo', cat: cat });
+    } catch (e) { failCount++; }
   }
+  saveData(d);
+  document.getElementById('gal-caption').value = '';
+  clearGalleryPhotoSelection();
+  renderAdminGallery();
+  renderGallery();
+  if (failCount) toast('⚠️ ' + (total-failCount) + ' uploaded, ' + failCount + ' failed.', '#e25555');
+  else toast('📸 ' + total + ' photo' + (total>1?'s':'') + ' added!');
+}
+
+function toggleAllGalleryPhotos(select) {
+  document.querySelectorAll('.gal-select-cb').forEach(function(cb){ cb.checked = select; });
+  updateGallerySelectedCount();
+}
+
+function updateGallerySelectedCount() {
+  var n = document.querySelectorAll('.gal-select-cb:checked').length;
+  var el = document.getElementById('gal-selected-count');
+  if (el) el.textContent = n ? (n + ' selected') : '';
+}
+
+function deleteSelectedGalleryPhotos() {
+  var checked = Array.from(document.querySelectorAll('.gal-select-cb:checked'));
+  if (!checked.length) { alert('Select at least one photo first.'); return; }
+  if (!confirm('Remove ' + checked.length + ' selected photo(s)?')) return;
+  var indices = checked.map(function(cb){ return parseInt(cb.dataset.idx); }).sort(function(a,b){ return b-a; });
+  var d = getData();
+  indices.forEach(function(i){ d.photos.splice(i,1); });
+  saveData(d);
+  renderAdminGallery();
+  renderGallery();
+  toast('🗑 ' + checked.length + ' photo(s) removed.', '#e25555');
 }
 
 function deleteGalleryPhoto(i) {
@@ -2508,6 +2552,7 @@ function renderAdminGallery() {
   }
   el.innerHTML = photos.map(function(p, i) {
     return '<div style="position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);">'
+      + '<input type="checkbox" class="gal-select-cb" data-idx="'+i+'" onchange="updateGallerySelectedCount()" style="position:absolute;top:5px;left:5px;width:18px;height:18px;z-index:2;cursor:pointer;">'
       + '<img src="'+p.url+'" alt="'+p.caption+'" style="width:100%;height:90px;object-fit:cover;display:block;" onerror="this.style.background=\'#333\'">'
       + '<div style="padding:6px 8px;background:var(--card);">'
       + '<div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;">'+p.cat+'</div>'

@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<title>Maweni Hornets | Mombasa Basketball</title>
+<script>
+/* ============ SUPABASE SETTINGS — paste your two values between the quotes ============ */
+window.SUPABASE_URL = "https://naygnrmuswoyduuokons.supabase.co";
+window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5heWducm11c3dveWR1dW9rb25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDUwODMsImV4cCI6MjEwNjMyMTA4M30.qQShSqbAhj96rry9u8fSTHzJ2dUJIplIa43IQ-Huvh0";
+/* ======================================================================================= */
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link id="favicon" rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+
+:root {
+    --black: #0a0a0a;
+    --dark: #131111;
+    --dark2: #1c1818;
+    --yellow: #ec3a2c;
+    --gold: #c62018;
+    --white: #ffffff;
+    --light: #f4f1ee;
+    --gray: #aeb7ba;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: "Barlow Condensed", sans-serif; background: var(--black); color: var(--white); }
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* NAVIGATION */
+header {
+    position: absolute; top: 0; left: 0; width: 100%; z-index: 100;
+    padding: 18px 5%; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(0,0,0,.65), transparent);
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo img { width: 64px; height: 64px; object-fit: contain; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px var(--yellow); }
+.logo-text { font-size: 28px; font-weight: 900; line-height: .8; text-transform: uppercase; }
+.logo-text span { color: var(--yellow); }
+nav { display: flex; gap: 30px; }
+nav a { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: .3s; }
+nav a:hover, nav a.active { color: var(--yellow); }
+.contact-btn { background: var(--yellow); color: #000; padding: 13px 23px; font-weight: 800; text-transform: uppercase; }
+
+/* HERO */
+.hero {
+    min-height: 720px; position: relative; display: flex; align-items: center; overflow: hidden;
+    background: linear-gradient(90deg, rgba(10,0,0,.92) 0%, rgba(0,0,0,.58) 42%, rgba(0,0,0,.15) 100%),
+                var(--hero-bg, none);
+    background-size: cover; background-position: center;
+}
+.hero-content { width: 55%; padding-left: 7%; padding-top: 80px; position: relative; z-index: 3; }
+.location { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; font-weight: 700; margin-bottom: 20px; }
+.location span { color: var(--yellow); }
+.hero h1 { font-family: "Bebas Neue", sans-serif; font-size: clamp(80px, 10vw, 160px); line-height: .78; text-transform: uppercase; letter-spacing: 2px; }
+.hero h1 span { color: var(--yellow); }
+.hero-subtitle { margin-top: 25px; font-size: 25px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; }
+.hero-buttons { margin-top: 35px; display: flex; gap: 15px; }
+.btn { display: inline-block; padding: 16px 28px; background: var(--yellow); color: #000; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+.btn-outline { background: transparent; border: 1px solid var(--yellow); color: white; }
+.hero-logo { position: absolute; right: 8%; top: 50%; transform: translateY(-45%); width: min(38vw, 460px); border-radius: 50%; box-shadow: 0 0 0 6px var(--yellow), 0 0 80px rgba(236,58,44,.55); z-index: 2; }
+.hero-player { position: absolute; right: 4%; bottom: 0; width: 48%; max-height: 95%; object-fit: contain; object-position: bottom; }
+
+/* NEXT GAME */
+.next-game { background: #0d0b0b; border-top: 2px solid var(--yellow); border-bottom: 2px solid var(--yellow); padding: 30px 6%; }
+.game-wrapper { max-width: 1300px; margin: auto; display: grid; grid-template-columns: 1fr 1.4fr 1fr; align-items: center; gap: 30px; }
+.game-label { color: var(--yellow); text-transform: uppercase; font-weight: 800; letter-spacing: 3px; }
+.game-date { font-size: 25px; font-weight: 800; margin-top: 7px; }
+.game-location { color: var(--gray); margin-top: 5px; }
+.matchup { display: flex; justify-content: center; align-items: center; gap: 35px; }
+.team { text-align: center; }
+.team img { width: 75px; height: 75px; object-fit: contain; margin: auto; border-radius: 50%; }
+.team h3 { margin-top: 8px; font-size: 20px; }
+.vs { font-size: 30px; font-weight: 900; color: var(--yellow); }
+.countdown { display: flex; justify-content: center; gap: 18px; }
+.time strong { display: block; font-size: 38px; color: var(--yellow); }
+.time small { text-transform: uppercase; color: var(--gray); }
+
+/* STORY */
+.story { display: grid; grid-template-columns: 1fr 1fr; min-height: 520px; }
+.story-image { background: linear-gradient(rgba(0,0,0,.15), rgba(0,0,0,.3)), var(--story-bg, none); background-size: cover; background-position: center; }
+.story-content { padding: 80px; display: flex; flex-direction: column; justify-content: center; background: var(--dark); }
+.section-label { color: var(--yellow); text-transform: uppercase; letter-spacing: 3px; font-weight: 800; }
+.story h2 { font-family: "Bebas Neue", sans-serif; font-size: 80px; line-height: .9; margin: 15px 0 25px; }
+.story h2 span { color: var(--yellow); }
+.story p { color: #cfc9c7; font-size: 18px; line-height: 1.6; max-width: 550px; }
+.values { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-top: 35px; }
+.value { border-top: 2px solid var(--yellow); padding-top: 12px; }
+.value strong { display: block; color: var(--yellow); text-transform: uppercase; }
+.value small { color: var(--gray); }
+
+/* TEAM */
+.team-section { background: var(--light); color: #111; padding: 80px 6%; }
+.section-heading { max-width: 1300px; margin: auto auto 40px; }
+.section-heading h2 { font-family: "Permanent Marker", cursive; font-size: 65px; text-transform: uppercase; }
+.section-heading p { color: #555; }
+.players { max-width: 1300px; margin: auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+.player-card { background: white; overflow: hidden; transition: .3s; }
+.player-card:hover { transform: translateY(-8px); }
+.player-image { height: 330px; background: #151515; overflow: hidden; }
+.player-image img { width: 100%; height: 100%; object-fit: cover; }
+.player-info { padding: 17px; }
+.player-number { color: var(--gold); font-weight: 900; }
+.player-info h3 { font-size: 28px; text-transform: uppercase; }
+.player-position { color: #777; }
+
+/* SCHEDULE */
+.schedule { padding: 80px 6%; background: var(--dark); }
+.schedule-container { max-width: 1300px; margin: auto; }
+.schedule h2 { font-family: "Permanent Marker", cursive; font-size: 60px; }
+.games { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 40px; }
+.game-card { border: 1px solid #3a2e2c; padding: 25px; background: #181414; }
+.game-card .date { color: var(--yellow); font-weight: 800; }
+.game-teams { display: flex; justify-content: space-around; align-items: center; text-align: center; margin: 25px 0; }
+.game-teams img { width: 60px; height: 60px; object-fit: contain; border-radius: 50%; }
+.game-teams h4 { margin-top: 8px; }
+
+/* NEWS */
+.news { background: var(--light); color: #111; padding: 80px 6%; }
+.news-container { max-width: 1300px; margin: auto; }
+.news-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 25px; margin-top: 40px; }
+.news-card { background: white; }
+.news-card img { width: 100%; height: 220px; object-fit: cover; }
+.news-info { padding: 20px; }
+.news-info small { color: var(--gold); font-weight: 800; }
+.news-info h3 { font-size: 25px; margin: 10px 0; }
+.read-more { color: #111; font-weight: 800; text-transform: uppercase; }
+
+/* GALLERY */
+.gallery { padding: 80px 6%; background: var(--black); }
+.gallery-container { max-width: 1300px; margin: auto; }
+.gallery-grid { margin-top: 40px; display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.gallery-grid img { width: 100%; height: 230px; object-fit: cover; transition: .3s; }
+.gallery-grid img:hover { transform: scale(1.03); }
+
+/* FOOTER */
+footer { background: #070606; padding: 60px 6% 25px; border-top: 2px solid var(--yellow); }
+.footer-container { max-width: 1300px; margin: auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+.footer-brand h2 { font-family: "Bebas Neue"; font-size: 45px; }
+.footer-brand span { color: var(--yellow); }
+footer h3 { margin-bottom: 15px; color: var(--yellow); text-transform: uppercase; }
+footer a { display: block; color: #aaa; margin-bottom: 8px; }
+.copyright { max-width: 1300px; margin: 50px auto 0; padding-top: 20px; border-top: 1px solid #2e2726; color: #777; }
+
+
+[hidden]{display:none!important}
+.logo{user-select:none;-webkit-user-select:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hero{background-color:#150404}
+.badge{width:75px;height:75px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#1c1818;border:2px solid var(--yellow);font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:1px}
+.game-teams .badge{width:60px;height:60px;font-size:22px}
+.ph{width:100%;height:100%;display:grid;place-items:center;font-family:"Bebas Neue",sans-serif;font-size:110px;color:#4a2a27;background:linear-gradient(160deg,#2a0f0d,#0a0a0a)}
+.news-ph{height:220px;display:grid;place-items:center;font-size:60px;background:linear-gradient(160deg,#2a0f0d,#0a0a0a)}
+.gph{height:230px;display:grid;place-items:center;font-size:44px;background:linear-gradient(160deg,#2a0f0d,#151010)}
+.game-card.past{opacity:.5}
+.game-card .tag{display:inline-block;margin-left:8px;font-size:12px;background:#3a2e2c;padding:2px 8px;letter-spacing:1px}
+.empty-note{color:var(--gray);padding:10px 0}
+.news-info p{color:#555}
+
+/* ADMIN */
+#loginOv{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+#loginForm{background:#141010;border:2px solid var(--yellow);padding:30px;width:min(360px,100%);text-align:center;font-family:"Barlow Condensed",sans-serif}
+#loginForm img{width:84px;height:84px;border-radius:50%;margin:0 auto 12px;background:#fff}
+#loginForm h3{font-size:26px;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px}
+#loginForm input{width:100%;padding:13px;font-size:18px;background:#0a0a0a;border:1px solid #4a3a38;color:#fff;text-align:center;font-family:inherit}
+#loginErr{color:#ff7b6e;min-height:22px;margin:8px 0}
+#loginForm .row{display:flex;gap:10px}
+#loginForm button,.abtn{flex:1;padding:12px;font:800 15px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:1px;border:1px solid var(--yellow);background:transparent;color:#fff;cursor:pointer}
+#loginForm button[type=submit],.abtn.pri{background:var(--yellow);color:#000}
+#fab{position:fixed;left:16px;bottom:16px;z-index:1500;background:var(--yellow);color:#000;border:0;padding:12px 18px;font:900 15px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#panel{position:fixed;top:0;right:0;height:100vh;width:min(470px,100vw);background:#120e0e;color:#eee;z-index:1800;border-left:2px solid var(--yellow);display:flex;flex-direction:column;transition:transform .3s;font-family:"Barlow Condensed",sans-serif;font-size:16px}
+#panel.closed{transform:translateX(105%)}
+.p-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#1c1414;border-bottom:1px solid #3a2e2c}
+.p-head img{width:38px;height:38px;border-radius:50%;background:#fff}
+.p-head b{font-size:20px;text-transform:uppercase;letter-spacing:1px;flex:1}
+#pstatus{font-size:13px;color:#7fdc8f}#pstatus.err{color:#ff7b6e}
+.p-head button{background:none;border:1px solid #4a3a38;color:#fff;font-size:18px;width:34px;height:34px;cursor:pointer}
+#tabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:#181212;border-bottom:1px solid #3a2e2c}
+#tabs button{padding:8px 12px;background:#221919;border:0;color:#cbbcb9;font:700 14px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:1px;cursor:pointer}
+#tabs button.on{background:var(--yellow);color:#000}
+#pbody{flex:1;overflow-y:auto;padding:14px 14px 60px}
+#pbody h4{color:var(--yellow);text-transform:uppercase;letter-spacing:2px;margin:18px 0 8px;font-size:15px;border-bottom:1px solid #3a2e2c;padding-bottom:4px}
+#pbody h4:first-child{margin-top:0}
+#pbody label.f{display:block;margin-bottom:10px;font-size:13px;color:#b9a9a6;text-transform:uppercase;letter-spacing:1px}
+#pbody label.f input,#pbody label.f textarea{display:block;width:100%;margin-top:4px;padding:9px 10px;background:#0a0a0a;border:1px solid #3d302e;color:#fff;font:16px "Barlow Condensed",sans-serif;text-transform:none;letter-spacing:0}
+#pbody label.f input:focus,#pbody label.f textarea:focus{outline:1px solid var(--yellow)}
+.card{background:#1a1414;border:1px solid #33292a;padding:10px;margin-bottom:10px}
+.card .ctop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--yellow);font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.mini{background:#2a2020;border:1px solid #45393a;color:#fff;padding:4px 9px;margin-left:4px;cursor:pointer;font:700 13px "Barlow Condensed",sans-serif}
+.mini.del{border-color:#8a2a22;color:#ff8d80}
+.imgf>span{display:block;font-size:13px;color:#b9a9a6;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.imgrow{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.imgrow img,.imgrow i{width:70px;height:70px;object-fit:cover;background:#0a0a0a;border:1px solid #3d302e;display:grid;place-items:center;color:#777;font-size:12px}
+.imgrow>div{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{background:var(--yellow);color:#000;padding:7px 12px;font:800 14px "Barlow Condensed",sans-serif;text-transform:uppercase;cursor:pointer}
+.gthumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.gthumbs div{position:relative}.gthumbs img{width:100%;height:80px;object-fit:cover}
+.gthumbs button{position:absolute;top:2px;right:2px;background:#000c;border:0;color:#fff;cursor:pointer;width:24px;height:24px}
+.pnote{color:#9d8d8a;font-size:14px;line-height:1.4;margin:6px 0 12px}
+.arow{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+@media(max-width:550px){#panel{width:100vw}}
+
+/* SHOP */
+.shop{padding:80px 6%;background:var(--black);border-top:1px solid #2e2726}
+.shop-container{max-width:1300px;margin:auto}
+.shop .section-heading{margin-left:0}
+.shop .section-heading h2{font-family:"Permanent Marker",cursive;font-size:60px;text-transform:uppercase}
+.shop .section-heading p{color:var(--gray)}
+.shop-steps{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+.shop-steps div{flex:1;min-width:200px;border-top:2px solid var(--yellow);padding-top:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#d8d0ce}
+.shop-steps b{color:var(--yellow);font-size:22px;margin-right:6px}
+.shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.prod{background:#181414;border:1px solid #3a2e2c;display:flex;flex-direction:column;transition:.3s}
+.prod:hover{transform:translateY(-6px);border-color:var(--yellow)}
+.prod-img{position:relative;height:260px;background:#0d0b0b;overflow:hidden}
+.prod-img img{width:100%;height:100%;object-fit:cover}
+.prod-img .ph{font-size:70px}
+.soldout{position:absolute;top:10px;left:10px;background:#000;color:#fff;padding:4px 10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:13px}
+.prod.out .prod-img img{opacity:.45}
+.prod-info{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.prod-info h3{font-size:24px;text-transform:uppercase}
+.prod-info p{color:var(--gray);font-size:16px}
+.prod-price{color:var(--yellow);font-size:26px;font-weight:900}
+.prod-row{display:flex;gap:8px}
+.prod-row select,.prod-row input{flex:1;min-width:0;padding:9px;background:#0a0a0a;border:1px solid #4a3a38;color:#fff;font:700 16px "Barlow Condensed",sans-serif}
+.prod-row input{max-width:80px}
+.prod .btn{margin-top:auto;border:0;cursor:pointer;text-align:center;font-size:16px}
+.prod .btn:disabled{background:#3a2e2c;color:#999;cursor:not-allowed}
+.shop-pay{margin-top:18px;padding:14px 16px;border-left:3px solid var(--yellow);background:#181414;color:#d8d0ce;line-height:1.4}
+.shop-pay b{color:var(--yellow);text-transform:uppercase;letter-spacing:1px}
+#cartBtn{position:fixed;right:16px;bottom:16px;z-index:1400;background:var(--yellow);color:#000;border:0;padding:13px 20px;font:900 16px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#cartCount{display:inline-block;min-width:22px;margin-left:6px;background:#000;color:#fff;border-radius:11px;padding:0 6px;text-align:center}
+#cart{position:fixed;top:0;right:0;height:100vh;width:min(430px,100vw);background:#120e0e;color:#eee;z-index:1700;border-left:2px solid var(--yellow);display:flex;flex-direction:column;transition:transform .3s;font-family:"Barlow Condensed",sans-serif;font-size:17px}
+#cart.closed{transform:translateX(105%)}
+.cart-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#1c1414;border-bottom:1px solid #3a2e2c}
+.cart-head b{font-size:22px;text-transform:uppercase;letter-spacing:1px}
+.cart-head button{background:none;border:1px solid #4a3a38;color:#fff;width:34px;height:34px;font-size:18px;cursor:pointer}
+#cartBody{flex:1;overflow-y:auto;padding:14px 16px 30px}
+#cartBody .btn{width:100%;border:0;cursor:pointer;text-align:center;margin-top:12px;font-size:17px}
+#cartBody .btn.wa{background:#25d366}
+.cl{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #2e2726}
+.cl-img{width:64px;height:64px;background:#0a0a0a;display:grid;place-items:center;font-size:26px;flex-shrink:0;overflow:hidden}
+.cl-img img{width:100%;height:100%;object-fit:cover}
+.cl-info{flex:1;display:flex;flex-direction:column;gap:2px}.cl-info small{color:var(--gray)}.cl-info span{color:var(--yellow);font-weight:800}
+.qty{display:flex;align-items:center;gap:6px;margin-top:4px}
+.qty button{width:28px;height:28px;background:#2a2020;border:1px solid #45393a;color:#fff;cursor:pointer;font-size:16px}
+.qty em{font-style:normal;min-width:20px;text-align:center;font-weight:800}
+.qty .rm{width:auto;padding:0 8px;font-size:13px;margin-left:6px;color:#ff8d80;border-color:#8a2a22}
+.cl-tot{font-weight:800;white-space:nowrap}
+.cart-total{display:flex;justify-content:space-between;font-size:22px;padding:14px 0}.cart-total b{color:var(--yellow)}
+.cart-empty,.cart-done{text-align:center;padding:40px 10px;color:#d8d0ce}.cart-done .big{font-size:54px}.cart-done h3{font-size:28px;margin:8px 0}
+.cf h4{color:var(--yellow);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.cf input,.cf select,.cf textarea{display:block;width:100%;margin-bottom:8px;padding:11px;background:#0a0a0a;border:1px solid #4a3a38;color:#fff;font:17px "Barlow Condensed",sans-serif}
+.cf-err{color:#ff7b6e;min-height:20px;margin-top:6px}
+.cf .link{background:none;border:0;color:var(--gray);cursor:pointer;margin-top:10px;font:16px "Barlow Condensed",sans-serif}
+#cartBody .btn.sms{background:#fff;color:#000}
+#cartBody .link{display:block;margin:12px auto 0;background:none;border:0;color:var(--gray);cursor:pointer;font:16px "Barlow Condensed",sans-serif;width:auto}
+.cart-hint{color:var(--gray);font-size:14px;margin-top:10px}
+
+.gal-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 4px}
+.gtab{padding:10px 22px;background:transparent;border:1px solid #4a3a38;color:#d8d0ce;font:800 16px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.gtab:hover{border-color:var(--yellow)}
+.gtab.on{background:var(--yellow);border-color:var(--yellow);color:#000}
+.gi{position:relative;overflow:hidden}
+.gi span{position:absolute;left:8px;bottom:8px;background:#000c;padding:2px 9px;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff}
+
+
+#pbody label.f select{display:block;width:100%;margin-top:4px;padding:9px 10px;background:#0a0a0a;border:1px solid #3d302e;color:#fff;font:16px "Barlow Condensed",sans-serif;text-transform:none;letter-spacing:0}
+#em{margin-bottom:10px}
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2500;background:#25d366;color:#000;padding:12px 20px;font:800 17px "Barlow Condensed",sans-serif;letter-spacing:.5px;box-shadow:0 6px 24px rgba(0,0,0,.5);max-width:92vw;text-align:center}
+
+
+/* ===================== RESPONSIVE ===================== */
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:clip}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* fluid type */
+.story h2{font-size:clamp(50px,6.2vw,80px)}
+.section-heading h2,.schedule h2,.shop .section-heading h2{font-size:clamp(40px,5.2vw,64px)}
+.gallery h2{font-family:"Permanent Marker",cursive;font-size:clamp(40px,5.2vw,60px);text-transform:uppercase}
+.footer-brand h2{font-size:clamp(34px,8vw,45px)}
+
+/* wide screens: keep content aligned with the 1300px sections */
+header{padding:18px max(5%,calc((100vw - 1400px)/2))}
+.hero-content{padding-left:max(7%,calc((100vw - 1300px)/2))}
+.hero-logo{width:min(34vw,440px);right:max(8%,calc((100vw - 1300px)/2))}
+
+/* grids */
+.players{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.shop-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.news-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+.games{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+.gallery-grid{grid-template-columns:repeat(4,1fr)}
+.player-image{height:clamp(220px,30vw,330px)}
+.prod-img{height:clamp(170px,22vw,260px)}
+.news-card img,.news-ph{height:clamp(180px,26vw,220px)}
+.gallery-grid img,.gph{height:clamp(140px,28vw,230px)}
+
+/* mobile menu button (hidden on desktop) */
+.menu-btn{display:none;position:relative;z-index:2;width:46px;height:46px;place-items:center;background:transparent;border:1px solid var(--yellow);color:#fff;font-size:22px;cursor:pointer;flex-shrink:0}
+.nav-cta{display:none}
+.gtab{min-height:44px}
+
+@media(max-width:1300px){nav{gap:20px}}
+
+/* laptops small / tablets: collapse the menu */
+@media(max-width:1100px){
+  html{scroll-padding-top:74px}
+  header{position:fixed;background:rgba(10,10,10,.9);padding:10px 5%;gap:12px}
+  .logo{margin-right:auto;position:relative;z-index:2}
+  .contact-btn{position:relative;z-index:2}
+  .menu-btn{display:grid}
+  nav{position:fixed;top:0;left:0;right:0;z-index:1;flex-direction:column;gap:0;padding:86px 5% 24px;background:rgba(10,10,10,.98);border-bottom:2px solid var(--yellow);transform:translateY(-110%);transition:transform .3s;max-height:100vh;max-height:100dvh;overflow-y:auto;visibility:hidden}
+  header.open nav{transform:none;visibility:visible}
+  nav a{padding:16px 4px;font-size:20px;border-bottom:1px solid #2e2726}
+  .nav-cta{display:block;margin-top:16px;background:var(--yellow);color:#000;text-align:center;padding:14px;font-weight:900;text-transform:uppercase;letter-spacing:1px;border-bottom:0}
+  header.scrolled{background:rgba(10,10,10,.96);box-shadow:0 2px 0 var(--yellow)}
+  header.open{background:rgba(10,10,10,.98)}
+  .values{grid-template-columns:repeat(2,1fr)}
+  .story-content{padding:56px 44px}
+  .gallery-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* tablets portrait & below: stack */
+@media(max-width:900px){
+  .hero{min-height:680px}
+  .hero-content{width:100%;padding:120px 7% 56px}
+  .hero h1{font-size:clamp(60px,16vw,120px)}
+  .hero-subtitle{font-size:clamp(16px,4.6vw,25px);letter-spacing:2px}
+  .location{letter-spacing:3px}
+  .hero-logo{opacity:.2;width:min(70vw,420px);right:-8%;top:50%;transform:translateY(-40%)}
+  .next-game{padding:26px 5%}
+  .game-wrapper{grid-template-columns:1fr;text-align:center;gap:22px}
+  .story{grid-template-columns:1fr}
+  .story-image{min-height:300px;height:320px}
+  .story-content{padding:52px 6%}
+  .footer-container{grid-template-columns:repeat(2,1fr);gap:32px}
+  .footer-brand{grid-column:1/-1}
+}
+
+/* phones */
+@media(max-width:700px){
+  .team-section,.schedule,.news,.gallery,.shop{padding:56px 5%}
+  footer{padding:48px 5% 22px}
+  .players{grid-template-columns:repeat(2,1fr);gap:12px}
+  .player-info{padding:12px}
+  .player-info h3{font-size:22px}
+  .shop-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .prod-info{padding:12px}
+  .prod-info h3{font-size:20px}
+  .prod-price{font-size:22px}
+  .prod-row{flex-direction:column}
+  .prod-row input{max-width:none}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .gtab{padding:10px 16px}
+  .section-heading{margin-bottom:28px}
+}
+@media(max-width:640px){
+  .contact-btn{display:none}
+  .logo img{width:48px;height:48px}
+}
+@media(max-width:480px){
+  .logo-text{font-size:21px}
+  .matchup{gap:14px}
+  .team img,.badge{width:60px;height:60px}
+  .team h3{font-size:16px}
+  .countdown{gap:12px}
+  .time strong{font-size:30px}
+  .game-date{font-size:22px}
+  .values{grid-template-columns:repeat(2,1fr);gap:14px}
+  .btn{padding:14px 22px}
+  .hero-buttons{flex-wrap:wrap}
+  .game-card{padding:18px}
+}
+@media(max-width:340px){
+  .players,.shop-grid,.gallery-grid{grid-template-columns:1fr}
+  .footer-container{grid-template-columns:1fr}
+}
+
+/* admin panel & drawers on small screens */
+#panel,#cart{height:100vh;height:100dvh}
+@media(max-width:600px){#panel,#cart{width:100vw}}
+#fab{bottom:max(16px,env(safe-area-inset-bottom))}
+#pbody{padding-bottom:90px}
+@media(pointer:coarse){
+  .mini{padding:9px 13px}
+  .qty button{width:38px;height:38px}
+  #tabs button{padding:11px 14px}
+  .gthumbs button{width:32px;height:32px}
+}
+
+</style>
+</head>
+<body>
+
+<div id="site"></div>
+<div id="toast" hidden></div>
+
+<!-- Hidden admin: triple-click the logo (top left) -->
+<div id="adminRoot">
+  <div id="loginOv" hidden>
+    <form id="loginForm">
+      <img id="loginLogo" alt="">
+      <h3>Admin Access</h3>
+      <input type="email" id="em" placeholder="Admin email" autocomplete="username" hidden>
+      <input type="password" id="pw" placeholder="Password" autocomplete="off">
+      <div id="loginErr"></div>
+      <div class="row"><button type="button" id="loginCancel">Cancel</button><button type="submit">Unlock</button></div>
+    </form>
+  </div>
+  <aside id="panel" class="closed">
+    <div class="p-head"><img alt=""><b>Admin Panel</b><span id="pstatus"></span><button id="pclose" title="Close">✕</button></div>
+    <div id="tabs"></div>
+    <div id="pbody"></div>
+  </aside>
+  <button id="fab" hidden>✎ Admin</button>
+</div>
+
+<div id="cartRoot">
+  <aside id="cart" class="closed"><div class="cart-head"><b>Your Order</b><button id="cartClose" title="Close">✕</button></div><div id="cartBody"></div></aside>
+</div>
+
+<script id="seed" type="application/json">{"v": 1, "pass": "1975efq93hh", "club": {"name1": "Maweni", "name2": "Hornets", "fullName": "Maweni Hornets Basketball Club", "location": "📍 Mombasa, Kenya", "tag1": "Born in", "tag2": "Mombasa.", "subtitle": "Built for the court.", "storyBtn": "▶ Watch Our Story", "ticketsLabel": "Get Tickets →", "ticketsLink": "#contact"}, "images": {"logo": "", "heroBg": "", "storyBg": ""}, "nav": [{"label": "Home", "href": "#home"}, {"label": "Team", "href": "#team"}, {"label": "Schedule", "href": "#schedule"}, {"label": "Shop", "href": "#shop"}, {"label": "News", "href": "#news"}, {"label": "Gallery", "href": "#gallery"}, {"label": "Contact", "href": "#contact"}], "next": {"label": "Next Game"}, "shop": {"label": "Official Store", "title": "Hornets Merch", "text": "Rep the Hornets wherever you go. Official Maweni Hornets gear — order in minutes.", "currency": "KES", "whatsapp": "254746305373", "smsNumber": "+254746305373", "payInfo": "Send money via M-Pesa to 0746 305 373, then type the M-Pesa confirmation code when you place your order.", "deliveryNote": "Pick up at our games in Mombasa, or ask for delivery within Mombasa.", "items": [{"name": "Black T-Shirt", "price": "1500", "sizes": "S,M,L,XL,XXL", "desc": "Classic black Maweni Hornets tee.", "inStock": true, "img": ""}, {"name": "White T-Shirt", "price": "1500", "sizes": "S,M,L,XL,XXL", "desc": "Classic white Maweni Hornets tee.", "inStock": true, "img": ""}, {"name": "Hornets Hoodie", "price": "3500", "sizes": "S,M,L,XL", "desc": "Warm, soft and built for game night.", "inStock": true, "img": ""}, {"name": "Hornets Cap", "price": "900", "sizes": "", "desc": "One size, adjustable.", "inStock": true, "img": ""}]}, "about": {"label": "About Maweni Hornets", "title1": "More than", "title2": "just a team.", "text": "Maweni Hornets is a Mombasa-based basketball team built on hard work, talent and unity. We represent our city, our people and our culture — on and off the court.", "values": [{"t": "Discipline", "s": "Build character"}, {"t": "Unity", "s": "Create strength"}, {"t": "Pride", "s": "Represent Mombasa"}, {"t": "Community", "s": "Grow the game"}]}, "team": {"label": "Our Team", "title": "The Hornets", "text": "Talented. Hungry. United. Meet the players representing Maweni Hornets.", "players": [{"num": "05", "name": "Jimmy", "pos": "Guard", "photo": ""}, {"num": "10", "name": "Khalid", "pos": "Forward", "photo": ""}, {"num": "23", "name": "Tario", "pos": "Guard", "photo": ""}, {"num": "12", "name": "Omar", "pos": "Center", "photo": ""}]}, "schedule": {"label": "Schedule", "title": "Upcoming Games", "games": [{"when": "2026-09-28T16:00", "opponent": "Mombasa Sharks", "venue": "Mombasa Sports Complex", "logo": ""}, {"when": "2026-10-05T16:00", "opponent": "Coastal Kings", "venue": "Mombasa Sports Complex", "logo": ""}, {"when": "2026-10-12T16:00", "opponent": "Tanga Panthers", "venue": "Mombasa Sports Complex", "logo": ""}]}, "news": {"label": "Latest News", "title": "From the Court", "text": "Match results, team updates and community events.", "items": [{"date": "20 SEP 2026", "title": "Team Bonding in Mombasa", "text": "", "link": "#", "img": ""}, {"date": "18 SEP 2026", "title": "Game Day Vibes", "text": "", "link": "#", "img": ""}, {"date": "15 SEP 2026", "title": "Maweni Fans Show Up", "text": "", "link": "#", "img": ""}]}, "gallery": {"label": "Gallery", "title": "The Vibe", "cats": [{"id": "games", "name": "Games"}, {"id": "events", "name": "Events"}, {"id": "training", "name": "Training"}], "images": []}, "footer": {"line": "Basketball • Mombasa • Kenya", "motto": "Mombasa to the World 🌊🏀", "copy": "© 2026 Maweni Hornets. All Rights Reserved.", "cols": [{"title": "Quick Links", "links": [{"l": "Home", "h": "#home"}, {"l": "Team", "h": "#team"}, {"l": "Schedule", "h": "#schedule"}, {"l": "Gallery", "h": "#gallery"}]}, {"title": "Community", "links": [{"l": "News", "h": "#news"}, {"l": "Events", "h": "#"}, {"l": "Fans", "h": "#"}, {"l": "Sponsors", "h": "#"}]}, {"title": "Follow Us", "links": [{"l": "Instagram", "h": "#"}, {"l": "TikTok", "h": "#"}, {"l": "YouTube", "h": "#"}, {"l": "Facebook", "h": "#"}]}]}}</script>
+<script>
+(function(){
+const LOGO = "data:image/jpeg;base64,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";
+const KEY = 'maweni_hornets_site_v2';
+const SEED = JSON.parse(document.getElementById('seed').textContent);
+const SB_URL = String(window.SUPABASE_URL||'').trim(), SB_KEY = String(window.SUPABASE_ANON_KEY||'').trim();
+const sb = (SB_URL && SB_KEY && window.supabase) ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+let sbAuthed = false;
+let data, tab = 'site', authed = sb ? false : sessionStorage.getItem('mh_admin') === '1';
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hash = str => { str = 'mhc|' + str; let h1=0xdeadbeef,h2=0x41c6ce57; for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);} h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909); h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909); return (4294967296*(2097151&h2)+(h1>>>0)).toString(36); };
+const get = p => p.split('.').reduce((o,k)=>o==null?o:o[k], data);
+const set = (p,v) => { const ks=p.split('.'), l=ks.pop(); ks.reduce((o,k)=>o[k],data)[l]=v; };
+const clone = o => JSON.parse(JSON.stringify(o));
+const logoSrc = () => data.images.logo || LOGO;
+const initials = n => String(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const badge = (src,name) => src ? `<img src="${esc(src)}" alt="${esc(name)}">` : `<div class="badge">${esc(initials(name))}</div>`;
+const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'], MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const fmtDate = w => { const d=new Date(w); if(isNaN(d)) return ''; return `${DAYS[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')} ${MON[d.getMonth()]} ${d.getFullYear()}`; };
+const fmtTime = w => { const d=new Date(w); if(isNaN(d)) return ''; let h=d.getHours(), m=String(d.getMinutes()).padStart(2,'0'), ap=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${m} ${ap}`; };
+const sortedGames = () => [...data.schedule.games].sort((a,b)=>new Date(a.when)-new Date(b.when));
+const nextGame = () => sortedGames().find(g => new Date(g.when) > new Date());
+
+/* ---------- storage ---------- */
+function load(){
+  let st=null;
+  if(sb){ try{ st=JSON.parse(localStorage.getItem(KEY+'_remote')); }catch(e){} data = (st && st.club) ? st : clone(SEED); migrate(); return; }
+  try{ st=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  data = (st && st.v > (SEED.v||0)) ? st : clone(SEED);
+  migrate();
+}
+function migrate(){
+  if(data.shop && data.shop.smsNumber===undefined){ data.shop.smsNumber=SEED.shop.smsNumber; if(!data.shop.whatsapp) data.shop.whatsapp=SEED.shop.whatsapp; if(/add yours in the admin/.test(data.shop.payInfo||'')) data.shop.payInfo=SEED.shop.payInfo; }
+  if(data.shop && data.shop.items){ const T={'Home Jersey':['Black T-Shirt','Classic black Maweni Hornets tee.'],'Away Jersey':['White T-Shirt','Classic white Maweni Hornets tee.']};
+    data.shop.items.forEach(it=>{ if(T[it.name] && /^Official Maweni Hornets (home|away) jersey\.$/.test(it.desc||'')){ it.desc=T[it.name][1]; it.name=T[it.name][0]; if(it.price==='2500') it.price='1500'; } }); }
+  if(data.gallery && !data.gallery.cats){ data.gallery.cats=clone(SEED.gallery.cats); }
+  if(data.gallery){ data.gallery.images=data.gallery.images.map(x=>typeof x==='string'?{src:x,cat:'games'}:x); }
+  if(!data.shop){ data.shop = clone(SEED.shop); if(!data.nav.some(n=>n.href==='#shop')) data.nav.splice(Math.min(3,data.nav.length),0,{label:'Shop',href:'#shop'}); }
+}
+function status(msg, err){ const s=$('#pstatus'); if(!s) return; s.textContent=msg; s.className=err?'err':''; }
+async function pullRemote(){
+  if(!sb) return;
+  try{
+    const {data:row,error}=await sb.from('site_content').select('data').eq('id',1).maybeSingle();
+    if(error) throw error;
+    if(row && row.data && row.data.club){
+      data=row.data; migrate(); renderSite();
+      try{ localStorage.setItem(KEY+'_remote',JSON.stringify(data)); }catch(e){}
+      if(!$('#panel').classList.contains('closed')) renderPanel();
+    }
+  }catch(e){ console.warn('Could not load online content', e); }
+}
+let pushT;
+function pushRemote(){
+  if(!sb||!sbAuthed) return;
+  status('Saving…'); clearTimeout(pushT);
+  pushT=setTimeout(async()=>{
+    const pub=clone(data); delete pub.pass;
+    const {error}=await sb.from('site_content').upsert({id:1,data:pub,updated_at:new Date().toISOString()});
+    if(error) status('Online save failed: '+error.message,true);
+    else { status('Saved online ✓'); try{ localStorage.setItem(KEY+'_remote',JSON.stringify(pub)); }catch(e){} }
+  },700);
+}
+function save(){
+  data.v = Date.now();
+  if(sb){ pushRemote(); return; }
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); status('Saved ✓'); }
+  catch(e){ status('Storage full — use smaller photos or Export', true); }
+}
+let rt; const later = () => { clearTimeout(rt); rt=setTimeout(renderSite,120); };
+
+/* ---------- public site ---------- */
+function renderSite(){
+  const d=data, c=d.club, g=nextGame();
+  const games = sortedGames(), now=new Date();
+  const heroBg = d.images.heroBg ? `url("${d.images.heroBg}")` : 'radial-gradient(circle at 72% 40%, #5a0f0a, #0a0a0a 70%)';
+  const storyBg = d.images.storyBg ? `url("${d.images.storyBg}")` : 'linear-gradient(135deg,#4a120d,#0a0a0a)';
+  document.documentElement.style.setProperty('--hero-bg', heroBg);
+  document.documentElement.style.setProperty('--story-bg', storyBg);
+  document.title = `${c.name1} ${c.name2} | ${c.location.replace(/^📍\s*/,'')}`;
+  $('#favicon').href = logoSrc();
+
+  $('#site').innerHTML = `
+  <header>
+    <a href="#home" class="logo" id="logoTrigger"><img src="${esc(logoSrc())}" alt="${esc(c.name1+' '+c.name2)}">
+      <div class="logo-text">${esc(c.name1)}<br><span>${esc(c.name2)}</span></div></a>
+    <nav id="mainNav">${d.nav.map((n,i)=>`<a href="${esc(n.href)}"${i==0?' class="active"':''}>${esc(n.label)}</a>`).join('')}<a href="${esc(c.ticketsLink)}" class="nav-cta">${esc(c.ticketsLabel)}</a></nav>
+    <a href="${esc(c.ticketsLink)}" class="contact-btn">${esc(c.ticketsLabel)}</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">☰</button>
+  </header>
+
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="location">${esc(c.fullName)}<br><span>${esc(c.location)}</span></div>
+      <h1>${esc(c.tag1)}<br><span>${esc(c.tag2)}</span></h1>
+      <div class="hero-subtitle">${esc(c.subtitle)}</div>
+      <div class="hero-buttons"><a href="#story" class="btn">${esc(c.storyBtn)}</a></div>
+    </div>
+    <img class="hero-logo" src="${esc(logoSrc())}" alt="${esc(c.fullName)} logo">
+  </section>
+
+  <section class="next-game"><div class="game-wrapper">
+    ${g ? `
+    <div>
+      <div class="game-label">${esc(d.next.label)}</div>
+      <div class="game-date">${fmtDate(g.when)}</div>
+      <div>${fmtTime(g.when)}</div>
+      <div class="game-location">📍 ${esc(g.venue)}</div>
+    </div>
+    <div class="matchup">
+      <div class="team"><img src="${esc(logoSrc())}" alt=""><h3>${esc(c.name1.toUpperCase())}<br>${esc(c.name2.toUpperCase())}</h3></div>
+      <div class="vs">VS</div>
+      <div class="team">${badge(g.logo,g.opponent)}<h3>${esc(g.opponent.toUpperCase())}</h3></div>
+    </div>
+    <div class="countdown" id="cd"></div>` : `
+    <div><div class="game-label">${esc(d.next.label)}</div><div class="game-date">No upcoming games yet</div><div class="game-location">Check back soon</div></div>
+    <div class="matchup"><div class="team"><img src="${esc(logoSrc())}" alt=""><h3>${esc(c.name1.toUpperCase())}<br>${esc(c.name2.toUpperCase())}</h3></div></div><div></div>`}
+  </div></section>
+
+  <section class="story" id="story">
+    <div class="story-image"></div>
+    <div class="story-content">
+      <div class="section-label">${esc(d.about.label)}</div>
+      <h2>${esc(d.about.title1)}<br><span>${esc(d.about.title2)}</span></h2>
+      <p>${esc(d.about.text)}</p>
+      <div class="values">${d.about.values.map(v=>`<div class="value"><strong>${esc(v.t)}</strong><small>${esc(v.s)}</small></div>`).join('')}</div>
+    </div>
+  </section>
+
+  <section class="team-section" id="team">
+    <div class="section-heading"><div class="section-label">${esc(d.team.label)}</div><h2>${esc(d.team.title)}</h2><p>${esc(d.team.text)}</p></div>
+    <div class="players">${d.team.players.map(p=>`
+      <div class="player-card"><div class="player-image">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(p.name)}">`:`<div class="ph">#${esc(p.num)}</div>`}</div>
+      <div class="player-info"><div class="player-number">#${esc(p.num)}</div><h3>${esc(p.name)}</h3><div class="player-position">${esc(p.pos)}</div></div></div>`).join('')}</div>
+  </section>
+
+  <section class="schedule" id="schedule"><div class="schedule-container">
+    <div class="section-label">${esc(d.schedule.label)}</div><h2>${esc(d.schedule.title)}</h2>
+    <div class="games">${games.length ? games.map(x=>`
+      <div class="game-card${new Date(x.when)<now?' past':''}">
+        <div class="date">${fmtDate(x.when)} · ${fmtTime(x.when)}${new Date(x.when)<now?'<span class="tag">PLAYED</span>':''}</div>
+        <div class="game-teams">
+          <div><img src="${esc(logoSrc())}" alt=""><h4>${esc(d.club.name1)}</h4></div><strong>VS</strong>
+          <div>${badge(x.logo,x.opponent)}<h4>${esc(x.opponent)}</h4></div>
+        </div><p>📍 ${esc(x.venue)}</p></div>`).join('') : '<div class="empty-note">No games scheduled yet.</div>'}</div>
+  </div></section>
+
+  ${shopHTML()}
+
+  <section class="news" id="news"><div class="news-container">
+    <div class="section-label">${esc(d.news.label)}</div>
+    <div class="section-heading"><h2>${esc(d.news.title)}</h2><p>${esc(d.news.text)}</p></div>
+    <div class="news-grid">${d.news.items.map(n=>`
+      <article class="news-card">${n.img?`<img src="${esc(n.img)}" alt="${esc(n.title)}">`:'<div class="news-ph">🏀</div>'}
+      <div class="news-info"><small>${esc(n.date)}</small><h3>${esc(n.title)}</h3>${n.text?`<p>${esc(n.text)}</p><br>`:''}
+      <a href="${esc(n.link||'#')}" class="read-more">Read More →</a></div></article>`).join('')}</div>
+  </div></section>
+
+  <section class="gallery" id="gallery"><div class="gallery-container">
+    <div class="section-label">${esc(d.gallery.label)}</div><h2>${esc(d.gallery.title)}</h2>
+    <div id="galBox">${galleryHTML()}</div>
+  </div></section>
+
+  <footer id="contact"><div class="footer-container">
+    <div class="footer-brand"><h2>${esc(c.name1.toUpperCase())} <span>${esc(c.name2.toUpperCase())}</span></h2><p>${esc(d.footer.line)}</p><br><p>${esc(d.footer.motto)}</p></div>
+    ${d.footer.cols.map(col=>`<div><h3>${esc(col.title)}</h3>${col.links.map(l=>`<a href="${esc(l.h)}">${esc(l.l)}</a>`).join('')}</div>`).join('')}
+  </div><div class="copyright">${esc(d.footer.copy)}</div></footer>`;
+  tick(); onScroll();
+}
+function tick(){
+  const el=$('#cd'), g=nextGame(); if(!el||!g) return;
+  let s=Math.max(0,Math.floor((new Date(g.when)-Date.now())/1000));
+  const D=Math.floor(s/86400); s%=86400; const H=Math.floor(s/3600); s%=3600; const M=Math.floor(s/60), S=s%60;
+  const p=n=>String(n).padStart(2,'0');
+  el.innerHTML=[[D,'Days'],[H,'Hrs'],[M,'Min'],[S,'Sec']].map(([n,l])=>`<div class="time"><strong>${p(n)}</strong><small>${l}</small></div>`).join('');
+}
+setInterval(tick,1000);
+
+
+/* ---------- header behaviour ---------- */
+function onScroll(){
+  const h=$('header'); if(!h) return;
+  h.classList.toggle('scrolled', window.scrollY>40);
+  let cur=null;
+  h.querySelectorAll('nav a[href^="#"]').forEach(a=>{ const id=a.getAttribute('href').slice(1); const el=id&&document.getElementById(id); if(el && el.getBoundingClientRect().top<=140) cur=a; });
+  h.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active', a===cur || (!cur && a===h.querySelector('nav a'))));
+}
+addEventListener('scroll', onScroll, {passive:true});
+document.addEventListener('click', e=>{
+  const h=$('header'); if(!h) return;
+  const mb=e.target.closest('#menuBtn');
+  if(mb){ const o=h.classList.toggle('open'); mb.textContent=o?'✕':'☰'; mb.setAttribute('aria-expanded',o); return; }
+  if(h.classList.contains('open') && (e.target.closest('header nav a') || !e.target.closest('header'))){ h.classList.remove('open'); const b=$('#menuBtn'); if(b){ b.textContent='☰'; b.setAttribute('aria-expanded','false'); } }
+});
+
+/* ---------- gallery ---------- */
+let galFilter='all';
+function galleryHTML(){
+  const g=data.gallery, all=g.images;
+  const list = all.filter(i=>galFilter==='all'||i.cat===galFilter);
+  const nm = id => (g.cats.find(c=>c.id===id)||{}).name||'';
+  const tabs=[{id:'all',name:'All'},...g.cats].map(c=>`<button class="gtab${c.id===galFilter?' on':''}" data-gf="${esc(c.id)}">${esc(c.name)}</button>`).join('');
+  const grid = !all.length ? Array(8).fill('<div class="gph">🏀</div>').join('')
+    : list.length ? list.map(i=>`<div class="gi"><img src="${esc(i.src)}" alt="${esc(nm(i.cat))} photo">${galFilter==='all'?`<span>${esc(nm(i.cat))}</span>`:''}</div>`).join('')
+    : '<div class="empty-note" style="grid-column:1/-1">No photos here yet.</div>';
+  return `<div class="gal-tabs">${tabs}</div><div class="gallery-grid">${grid}</div>`;
+}
+document.addEventListener('click', e=>{ const b=e.target.closest('[data-gf]'); if(!b) return; galFilter=b.dataset.gf; const box=$('#galBox'); if(box) box.innerHTML=galleryHTML(); });
+
+/* ---------- shop ---------- */
+const money = n => `${data.shop.currency||'KES'} ${Number(n||0).toLocaleString('en-KE')}`;
+const sizesOf = it => String(it.sizes||'').split(',').map(s=>s.trim()).filter(Boolean);
+function shopHTML(){
+  const s=data.shop;
+  return `<section class="shop" id="shop"><div class="shop-container">
+    <div class="section-label">${esc(s.label)}</div>
+    <div class="section-heading"><h2>${esc(s.title)}</h2><p>${esc(s.text)}</p></div>
+    <div class="shop-grid">${s.items.length ? s.items.map((it,i)=>{ const sz=sizesOf(it), out=!it.inStock; return `
+      <div class="prod${out?' out':''}">
+        <div class="prod-img">${it.img?`<img src="${esc(it.img)}" alt="${esc(it.name)}">`:'<div class="ph">🏀</div>'}${out?'<span class="soldout">Sold out</span>':''}</div>
+        <div class="prod-info"><h3>${esc(it.name)}</h3>${it.desc?`<p>${esc(it.desc)}</p>`:''}<div class="prod-price">${money(it.price)}</div>
+          <div class="prod-row">${sz.length?`<select class="psize" aria-label="Size">${sz.map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}<input class="pqty" type="number" min="1" max="20" value="1" aria-label="Quantity"></div>
+          <button class="btn" data-add="${i}"${out?' disabled':''}>${out?'Sold out':'Order now'}</button></div></div>`; }).join('') : '<div class="empty-note">Merchandise coming soon.</div>'}</div>
+  </div></section>`;
+}
+let cart=[], cartView='cart';
+const saveCart = () => {};
+const findItem = n => data.shop.items.find(x=>x.name===n);
+const cartLines = () => cart.map((c,i)=>({...c,i,item:findItem(c.name)})).filter(c=>c.item).map(c=>({...c,price:Number(c.item.price)||0}));
+const cartTotal = () => cartLines().reduce((t,c)=>t+c.price*c.qty,0);
+function updateCount(){}
+function renderCart(){
+  const b=$('#cartBody'), L=cartLines(), s=data.shop;
+  if(cartView==='done'){
+    b.innerHTML=`<div class="cart-done"><div class="big">✅</div><h3>Almost done!</h3><p>Your order message is ready. <b>Press Send</b> in WhatsApp or your SMS app so we receive it — you can send it both ways.</p>
+    <button class="btn wa" data-c="wa2">Send by WhatsApp</button><button class="btn sms" data-c="sms2">Send by SMS</button>
+    <p class="cart-hint">SMS opens on phones. On a computer, use WhatsApp.</p>
+    ${s.payInfo?`<div class="shop-pay"><b>How to pay:</b> ${esc(s.payInfo)}</div>`:''}<button class="link" data-c="close">Back to shop</button></div>`; return; }
+  if(!L.length){ b.innerHTML='<div class="cart-empty">Nothing selected.<br><br><button class="btn" data-c="close">Back to shop</button></div>'; return; }
+  const lines = L.map(c=>`<div class="cl"><div class="cl-img">${c.item.img?`<img src="${esc(c.item.img)}" alt="">`:'🏀'}</div>
+    <div class="cl-info"><b>${esc(c.name)}</b>${c.size?`<small>Size: ${esc(c.size)}</small>`:''}<span>${money(c.price)}</span>
+    <div class="qty"><button data-c="dec" data-i="${c.i}">−</button><em>${c.qty}</em><button data-c="inc" data-i="${c.i}">+</button><button class="rm" data-c="rm" data-i="${c.i}">Remove</button></div></div>
+    <div class="cl-tot">${money(c.price*c.qty)}</div></div>`).join('');
+  if(cartView==='checkout'){
+    b.innerHTML=`${lines}<div class="cart-total"><span>Total</span><b>${money(cartTotal())}</b></div>
+    <div class="cf"><h4>Your details</h4>
+      <input id="cf-name" placeholder="Full name" autocomplete="name"><input id="cf-phone" placeholder="Phone number" type="tel" autocomplete="tel">
+      <select id="cf-how"><option>Pick up</option><option>Delivery</option></select>
+      <input id="cf-addr" placeholder="Delivery address / area (if delivery)"><textarea id="cf-note" rows="2" placeholder="Notes (optional)"></textarea>
+      <input id="cf-code" placeholder="M-Pesa confirmation code (after you pay)" autocapitalize="characters">
+      ${s.payInfo?`<div class="shop-pay"><b>How to pay:</b> ${esc(s.payInfo)}</div>`:''}
+      <div id="cf-err" class="cf-err"></div>
+      <button class="btn wa" data-c="send">Send order on WhatsApp</button><button class="btn sms" data-c="sendsms">Send order by SMS</button><button class="link" data-c="back">← Cancel</button></div>`;
+  } else {
+    b.innerHTML=`${lines}<div class="cart-total"><span>Total</span><b>${money(cartTotal())}</b></div><button class="btn wa" data-c="checkout">Checkout</button>`;
+  }
+}
+function openCart(v){ cartView=v||'cart'; renderCart(); $('#cart').classList.remove('closed'); }
+function closeCart(){ $('#cart').classList.add('closed'); }
+$('#cartClose').onclick = closeCart;
+document.addEventListener('click', e=>{
+  const a=e.target.closest('[data-add]');
+  if(a){ const i=+a.dataset.add, it=data.shop.items[i], card=a.closest('.prod'); if(!it||!it.inStock) return;
+    const size=(card.querySelector('.psize')||{}).value||'', qty=Math.max(1,Math.min(20,parseInt(card.querySelector('.pqty').value)||1));
+    cart=[{name:it.name,size,qty}]; openCart('checkout'); return; }
+  const c=e.target.closest('#cart [data-c]'); if(!c) return;
+  const act=c.dataset.c, i=+c.dataset.i;
+  if(act==='close'){ closeCart(); return; }
+  if(act==='inc') cart[i].qty=Math.min(20,cart[i].qty+1);
+  else if(act==='dec') cart[i].qty=Math.max(1,cart[i].qty-1);
+  else if(act==='rm') cart.splice(i,1);
+  else if(act==='checkout') cartView='checkout';
+  else if(act==='back'){ closeCart(); return; }
+  else if(act==='send'){ sendOrder('wa'); return; }
+  else if(act==='sendsms'){ sendOrder('sms'); return; }
+  else if(act==='wa2'){ deliver('wa',lastMsg); return; }
+  else if(act==='sms2'){ deliver('sms',lastMsg); return; }
+  saveCart(); renderCart();
+});
+let lastMsg='';
+function deliver(kind,msg){
+  const s=data.shop;
+  if(kind==='wa'){ window.open(`https://wa.me/${String(s.whatsapp||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank'); }
+  else { const n=String(s.smsNumber||s.whatsapp||'').replace(/[^\d+]/g,''); location.href=`sms:${n}${/iPhone|iPad|iPod/.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(msg)}`; }
+}
+function sendOrder(kind){
+  const err=$('#cf-err'), name=$('#cf-name').value.trim(), phone=$('#cf-phone').value.trim(), how=$('#cf-how').value, addr=$('#cf-addr').value.trim(), note=$('#cf-note').value.trim(), code=$('#cf-code').value.trim().toUpperCase();
+  const s=data.shop;
+  if(!name||!phone){ err.textContent='Please enter your name and phone number.'; return; }
+  if(how==='Delivery'&&!addr){ err.textContent='Please add your delivery address.'; return; }
+  if(!String(s.whatsapp||s.smsNumber||'').replace(/\D/g,'')){ err.textContent='Ordering is not switched on yet — please check back soon.'; return; }
+  const L=cartLines();
+  const msg = `*NEW ORDER – ${data.club.name1} ${data.club.name2} Shop*\n\n` +
+    L.map((c,n)=>`${n+1}. ${c.name}${c.size?' ('+c.size+')':''} x${c.qty} — ${money(c.price*c.qty)}`).join('\n') +
+    `\n\n*Total: ${money(cartTotal())}*\n\nName: ${name}\nPhone: ${phone}\n${how}${addr?': '+addr:''}${note?'\nNote: '+note:''}\nM-Pesa code: ${code||'NOT PAID YET'}`;
+  if(sb) sb.from('orders').insert({customer_name:name,phone,delivery_method:how,address:addr||null,note:note||null,mpesa_code:code||null,total:cartTotal(),items:L.map(c=>({name:c.name,size:c.size,qty:c.qty,price:c.price}))}).then(({error})=>{ if(error) console.warn('Order not saved online',error); });
+  lastMsg=msg; cart=[]; saveCart(); cartView='done'; renderCart(); deliver(kind,msg);
+}
+
+/* ---------- admin: images ---------- */
+function fileToData(file,max,png){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onerror=rej;
+    r.onload=()=>{ const im=new Image(); im.onerror=rej;
+      im.onload=()=>{ let w=im.width,h=im.height; const sc=Math.min(1,max/Math.max(w,h)); w=Math.round(w*sc); h=Math.round(h*sc);
+        const cv=document.createElement('canvas'); cv.width=w; cv.height=h; const x=cv.getContext('2d');
+        if(!png){ x.fillStyle='#fff'; x.fillRect(0,0,w,h); }
+        x.drawImage(im,0,0,w,h); res(png?cv.toDataURL('image/png'):cv.toDataURL('image/jpeg',.82)); };
+      im.src=r.result; };
+    r.readAsDataURL(file);
+  });
+}
+async function imgUpload(file,max,png){
+  const url = await fileToData(file,max,png);
+  if(!sb||!sbAuthed) return url;
+  try{
+    const blob = await (await fetch(url)).blob();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${png?'png':'jpg'}`;
+    const {error} = await sb.storage.from('site-images').upload(path, blob, {contentType:blob.type, cacheControl:'31536000'});
+    if(error) throw error;
+    return sb.storage.from('site-images').getPublicUrl(path).data.publicUrl;
+  }catch(e){ throw new Error('Photo upload failed: '+(e.message||e)); }
+}
+const IMGCFG = p => /logo|Logo/.test(p) ? [400,true] : /heroBg|storyBg/.test(p) ? [1600,false] : /photo/.test(p) ? [700,false] : [900,false];
+
+/* ---------- admin: panel builders ---------- */
+const F = (label,path,type='text') => { const v=get(path); if(v==null) return '';
+  return type==='textarea' ? `<label class="f">${label}<textarea data-p="${path}" rows="4">${esc(v)}</textarea></label>`
+                           : `<label class="f">${label}<input type="${type}" data-p="${path}" value="${esc(v)}"></label>`; };
+const IMG = (label,path) => { const v=get(path);
+  return `<div class="imgf"><span>${label}</span><div class="imgrow">${v?`<img src="${esc(v)}" alt="">`:'<i>none</i>'}<div><label class="fbtn">Upload<input type="file" accept="image/*" data-img="${path}" hidden></label>${v?`<button class="mini del" data-a="clrimg" data-p="${path}">Remove</button>`:''}</div></div></div>`; };
+const CHK = (label,path) => `<label class="f" style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-p="${path}" ${get(path)?'checked':''} style="width:auto;margin:0;display:inline-block">${label}</label>`;
+const CARD = (title,i,extra,body) => `<div class="card"><div class="ctop"><span>${title}</span><span>${extra}</span></div>${body}</div>`;
+const CTRL = (kind,i,n) => `${i>0?`<button class="mini" data-a="up" data-k="${kind}" data-i="${i}">↑</button>`:''}${i<n-1?`<button class="mini" data-a="down" data-k="${kind}" data-i="${i}">↓</button>`:''}<button class="mini del" data-a="del" data-k="${kind}" data-i="${i}">Delete</button>`;
+
+const TABS = {
+  site(){ return `
+    <h4>Logo & Name</h4>${IMG('Club logo','images.logo')}
+    ${F('Name – line 1','club.name1')}${F('Name – line 2 (red)','club.name2')}${F('Full club name (hero)','club.fullName')}${F('Location line','club.location')}
+    <h4>Hero</h4>${IMG('Hero background photo','images.heroBg')}
+    ${F('Headline – line 1','club.tag1')}${F('Headline – line 2 (red)','club.tag2')}${F('Sub headline','club.subtitle')}${F('Story button text','club.storyBtn')}
+    ${F('Top-right button text','club.ticketsLabel')}${F('Top-right button link','club.ticketsLink')}
+    <h4>Menu links</h4>
+    ${data.nav.map((n,i)=>CARD('Link '+(i+1),i,CTRL('nav',i,data.nav.length),F('Label',`nav.${i}.label`)+F('Goes to (e.g. #team or https://…)',`nav.${i}.href`))).join('')}
+    <div class="arow"><button class="abtn" data-a="add" data-k="nav">+ Add menu link</button></div>`; },
+  about(){ return `
+    <h4>About section</h4>${IMG('Background photo','images.storyBg')}
+    ${F('Small label','about.label')}${F('Title – line 1','about.title1')}${F('Title – line 2 (red)','about.title2')}${F('Paragraph','about.text','textarea')}
+    <h4>Values</h4>${data.about.values.map((v,i)=>CARD('Value '+(i+1),i,'',F('Title',`about.values.${i}.t`)+F('Sub text',`about.values.${i}.s`))).join('')}`; },
+  games(){ return `
+    <h4>Next game banner</h4>${F('Banner label','next.label')}
+    <p class="pnote">The banner and countdown automatically use the earliest game below that hasn't happened yet.</p>
+    <h4>Schedule section</h4>${F('Small label','schedule.label')}${F('Title','schedule.title')}
+    <h4>Games</h4>
+    ${data.schedule.games.map((x,i)=>CARD('Game '+(i+1),i,CTRL('game',i,data.schedule.games.length),
+      F('Date & time',`schedule.games.${i}.when`,'datetime-local')+F('Opponent',`schedule.games.${i}.opponent`)+F('Venue',`schedule.games.${i}.venue`)+IMG('Opponent logo (optional)',`schedule.games.${i}.logo`))).join('')}
+    <div class="arow"><button class="abtn pri" data-a="add" data-k="game">+ Add game</button></div>`; },
+  shop(){ return `
+    <h4>Shop section</h4>${F('Small label','shop.label')}${F('Title','shop.title')}${F('Text','shop.text','textarea')}${F('Currency','shop.currency')}
+    <h4>Getting orders & payments</h4>
+    ${F('WhatsApp number that receives orders','shop.whatsapp','tel')}
+    <p class="pnote">Country code, no + or spaces, e.g. 254746305373.</p>
+    ${F('SMS number that receives orders','shop.smsNumber','tel')}
+    <p class="pnote">e.g. +254746305373. Customers press one button to text you their order (works on phones).</p>
+    ${F('How customers pay (shown in the order panel)','shop.payInfo','textarea')}
+    <h4>Products</h4>
+    ${data.shop.items.map((it,i)=>CARD(esc(it.name||'Product'),i,CTRL('product',i,data.shop.items.length),
+      F('Product name',`shop.items.${i}.name`)+F('Price (numbers only)',`shop.items.${i}.price`,'number')+F('Sizes (comma separated, leave empty if none)',`shop.items.${i}.sizes`)+F('Description',`shop.items.${i}.desc`)+CHK('In stock',`shop.items.${i}.inStock`)+IMG('Product photo',`shop.items.${i}.img`))).join('')}
+    <div class="arow"><button class="abtn pri" data-a="add" data-k="product">+ Add product</button></div>`; },
+  team(){ return `
+    <h4>Team section</h4>${F('Small label','team.label')}${F('Title','team.title')}${F('Text','team.text','textarea')}
+    <h4>Players</h4>
+    ${data.team.players.map((p,i)=>CARD(esc(p.name||'Player'),i,CTRL('player',i,data.team.players.length),
+      F('Number',`team.players.${i}.num`)+F('Name',`team.players.${i}.name`)+F('Position',`team.players.${i}.pos`)+IMG('Photo',`team.players.${i}.photo`))).join('')}
+    <div class="arow"><button class="abtn pri" data-a="add" data-k="player">+ Add player</button></div>`; },
+  news(){ return `
+    <h4>News section</h4>${F('Small label','news.label')}${F('Title','news.title')}${F('Text','news.text')}
+    <h4>Articles</h4>
+    ${data.news.items.map((n,i)=>CARD(esc(n.title||'Article'),i,CTRL('news',i,data.news.items.length),
+      F('Date text',`news.items.${i}.date`)+F('Headline',`news.items.${i}.title`)+F('Short text (optional)',`news.items.${i}.text`,'textarea')+F('Read more link',`news.items.${i}.link`)+IMG('Photo',`news.items.${i}.img`))).join('')}
+    <div class="arow"><button class="abtn pri" data-a="add" data-k="news">+ Add article</button></div>`; },
+  gallery(){ return `
+    <h4>Gallery section</h4>${F('Small label','gallery.label')}${F('Title','gallery.title')}
+    <h4>Category names</h4>${data.gallery.cats.map((c,i)=>F('Category '+(i+1),`gallery.cats.${i}.name`)).join('')}
+    ${data.gallery.cats.map(c=>{ const list=data.gallery.images.map((im,i)=>({...im,i})).filter(im=>im.cat===c.id);
+      return `<h4>${esc(c.name)} (${list.length})</h4><label class="fbtn" style="display:inline-block">+ Upload photos<input type="file" accept="image/*" multiple data-gal="${c.id}" hidden></label>
+      <div class="gthumbs">${list.map(im=>`<div><img src="${esc(im.src)}" alt=""><button data-a="del" data-k="gal" data-i="${im.i}">✕</button></div>`).join('')}</div>`; }).join('')}`; },
+  footer(){ return `
+    <h4>Footer</h4>${F('Line under name','footer.line')}${F('Motto','footer.motto')}${F('Copyright','footer.copy')}
+    ${data.footer.cols.map((col,ci)=>`<h4>Column ${ci+1}</h4>${F('Column title',`footer.cols.${ci}.title`)}
+      ${col.links.map((l,li)=>CARD('Link '+(li+1),li,`<button class="mini del" data-a="dellink" data-c="${ci}" data-i="${li}">Delete</button>`,F('Label',`footer.cols.${ci}.links.${li}.l`)+F('Goes to',`footer.cols.${ci}.links.${li}.h`))).join('')}
+      <div class="arow"><button class="abtn" data-a="addlink" data-c="${ci}">+ Add link</button></div>`).join('')}`; },
+  settings(){ return `
+    <h4>Change password</h4>
+    ${sb?'':'<label class="f">Current password<input type="password" id="pw0" autocomplete="off"></label>'}
+    <label class="f">New password (min ${sb?8:6} characters)<input type="password" id="pw1" autocomplete="off"></label>
+    <label class="f">Confirm new password<input type="password" id="pw2" autocomplete="off"></label>
+    <div class="arow"><button class="abtn pri" data-a="chgpw">Update password</button></div><div id="pwmsg" class="pnote"></div>
+    <h4>Save & share your website</h4>
+    <p class="pnote">${sb?'Your edits are saved online automatically. Visitors see them right away — no need to upload anything.':'Your edits are saved automatically in this browser. To put the updated site online or open it on another device, download the site file and upload it in place of your current index.html.'}</p>
+    <div class="arow"><button class="abtn pri" data-a="export-site">⬇ Download website file</button></div>
+    <h4>Backup</h4>
+    <div class="arow"><button class="abtn" data-a="export-json">Export backup</button><label class="abtn" style="text-align:center">Import backup<input type="file" accept=".json,application/json" data-import hidden></label></div>
+    <h4>Session</h4>
+    <div class="arow"><button class="abtn" data-a="logout">Log out</button>${sb?'':'<button class="abtn" data-a="reset" style="border-color:#8a2a22;color:#ff8d80">Reset all edits</button>'}</div>`; }
+};
+let orders=[], ordersMsg='', orderCh=null;
+async function loadOrders(){
+  if(!sb||!sbAuthed) return;
+  const {data:rows,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(100);
+  if(error) ordersMsg=error.message; else { orders=rows||[]; ordersMsg=''; }
+  if(tab==='orders' && !$('#panel').classList.contains('closed')) renderPanel();
+}
+TABS.orders = () => `<h4>Orders (${orders.length})</h4>${ordersMsg?`<p class="pnote">${esc(ordersMsg)}</p>`:''}
+  <div class="arow"><button class="abtn" data-a="refresh-orders">↻ Refresh</button></div>
+  ${orders.map(o=>`<div class="card"><div class="ctop"><span>${esc(o.customer_name)} · ${money(o.total)}</span></div>
+    <div class="pnote" style="color:#eee;margin-top:0">${(o.items||[]).map(i=>`${esc(i.qty)}× ${esc(i.name)}${i.size?' ('+esc(i.size)+')':''}`).join(', ')}<br>
+    Phone: ${esc(o.phone)} · ${esc(o.delivery_method||'')}${o.address?' – '+esc(o.address):''}<br>
+    M-Pesa code: <b>${esc(o.mpesa_code||'not paid yet')}</b>${o.note?'<br>Note: '+esc(o.note):''}<br>
+    <small>${esc(new Date(o.created_at).toLocaleString('en-KE'))}</small></div>
+    <label class="f">Status<select data-order="${esc(o.id)}">${['new','paid','delivered','cancelled'].map(s=>`<option${o.status===s?' selected':''}>${s}</option>`).join('')}</select></label></div>`).join('') || '<p class="pnote">No orders yet.</p>'}`;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true,12000); }
+function startOrderWatch(){
+  if(!sb||orderCh) return;
+  loadOrders();
+  orderCh = sb.channel('orders-watch').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},p=>{
+    const o=p.new; orders.unshift(o); toast(`🛒 New order from ${o.customer_name} — ${money(o.total)}`);
+    if(tab==='orders' && !$('#panel').classList.contains('closed')) renderPanel();
+  }).subscribe();
+}
+const TABNAMES = {site:'Site',about:'About',games:'Games',shop:'Shop',team:'Team',news:'News',gallery:'Gallery',footer:'Footer',settings:'Settings',orders:'Orders'};
+
+function renderPanel(){
+  $('#tabs').innerHTML = Object.keys(TABNAMES).filter(k=>k!=='orders'||sb).map(k=>`<button data-tab="${k}" class="${k===tab?'on':''}">${TABNAMES[k]}</button>`).join('');
+  const b=$('#pbody'), y=b.scrollTop; b.innerHTML = TABS[tab](); b.scrollTop=y;
+  $('#panel .p-head img').src = logoSrc();
+}
+const openPanel = () => { if(!authed) return; renderPanel(); $('#panel').classList.remove('closed'); $('#fab').hidden=true; };
+const closePanel = () => { $('#panel').classList.add('closed'); $('#fab').hidden=!authed; };
+
+/* ---------- admin: login ---------- */
+let clicks=[], fails=0, lockUntil=0;
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#logoTrigger')) return;
+  const n=Date.now(); clicks=clicks.filter(t=>n-t<800); clicks.push(n);
+  if(clicks.length>=3){ e.preventDefault(); clicks=[]; authed ? openPanel() : openLogin(); }
+});
+function openLogin(){ $('#em').hidden=!sb; $('#loginOv').hidden=false; $('#loginErr').textContent=''; const i=$('#pw'); i.value=''; setTimeout(()=>i.focus(),50); $('#loginLogo').src=logoSrc(); }
+$('#loginCancel').onclick = () => $('#loginOv').hidden=true;
+$('#loginForm').onsubmit = e => {
+  e.preventDefault();
+  if(sb){ sbLogin(); return; }
+  if(Date.now()<lockUntil){ $('#loginErr').textContent='Too many attempts. Wait a moment.'; return; }
+  if(hash($('#pw').value)===data.pass){ authed=true; sessionStorage.setItem('mh_admin','1'); fails=0; $('#loginOv').hidden=true; openPanel(); }
+  else { fails++; $('#pw').value=''; $('#loginErr').textContent='Wrong password'; if(fails>=5){ lockUntil=Date.now()+30000; fails=0; $('#loginErr').textContent='Locked for 30 seconds'; } }
+};
+async function sbLogin(){
+  const err=$('#loginErr'); err.textContent='Signing in…';
+  const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});
+  if(error){ err.textContent='Wrong email or password'; $('#pw').value=''; return; }
+  sbAuthed=true; authed=true; $('#loginOv').hidden=true; openPanel(); startOrderWatch();
+}
+$('#fab').onclick = openPanel;
+$('#pclose').onclick = closePanel;
+
+/* ---------- admin: events ---------- */
+const NEW = {
+  nav: () => ({label:'New link',href:'#'}),
+  game: () => { const d=new Date(Date.now()+7*864e5); d.setHours(16,0,0,0); const p=n=>String(n).padStart(2,'0'); return {when:`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T16:00`,opponent:'Opponent',venue:'Venue',logo:''}; },
+  player: () => ({num:'00',name:'New Player',pos:'Guard',photo:''}),
+  product: () => ({name:'New product',price:'1000',sizes:'',desc:'',inStock:true,img:''}),
+  news: () => ({date:fmtDate(new Date()),title:'New article',text:'',link:'#',img:''})
+};
+const LIST = {nav:'nav',game:'schedule.games',player:'team.players',product:'shop.items',news:'news.items',gal:'gallery.images'};
+
+$('#panel').addEventListener('input', e=>{
+  const p=e.target.dataset.p; if(!p) return;
+  set(p, e.target.type==='checkbox' ? e.target.checked : e.target.value); save(); later();
+});
+$('#panel').addEventListener('change', async e=>{
+  const t=e.target;
+  try{
+    if(t.dataset.img){ const [m,png]=IMGCFG(t.dataset.img); if(!t.files[0]) return; set(t.dataset.img, await imgUpload(t.files[0],m,png)); save(); renderSite(); renderPanel(); }
+    else if('gal' in t.dataset){ for(const f of t.files) data.gallery.images.push({src:await imgUpload(f,900,false),cat:t.dataset.gal}); save(); renderSite(); renderPanel(); }
+    else if(t.dataset.order){ const {error}=await sb.from('orders').update({status:t.value}).eq('id',t.dataset.order); if(error) throw error; const o=orders.find(x=>x.id===t.dataset.order); if(o) o.status=t.value; status('Order updated ✓'); }
+    else if('import' in t.dataset && t.files[0]){ const o=JSON.parse(await t.files[0].text()); if(!o.club||!o.team) throw 0; data=o; save(); renderSite(); renderPanel(); status('Backup imported ✓'); }
+  }catch(err){ status((err&&err.message)||'Could not use that file', true); }
+});
+$('#panel').addEventListener('click', e=>{
+  const t=e.target.closest('[data-tab],[data-a]'); if(!t) return;
+  if(t.dataset.tab){ tab=t.dataset.tab; if(tab==='orders') loadOrders(); renderPanel(); $('#pbody').scrollTop=0; return; }
+  const a=t.dataset.a, k=t.dataset.k, i=+t.dataset.i;
+  const arr = k ? get(LIST[k]) : null;
+  if(a==='add'){ arr.push(NEW[k]()); }
+  else if(a==='del'){ if(k!=='gal' && !confirm('Delete this item?')) return; arr.splice(i,1); }
+  else if(a==='up'||a==='down'){ const j=a==='up'?i-1:i+1; [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  else if(a==='clrimg'){ set(t.dataset.p,''); }
+  else if(a==='addlink'){ data.footer.cols[+t.dataset.c].links.push({l:'New link',h:'#'}); }
+  else if(a==='dellink'){ data.footer.cols[+t.dataset.c].links.splice(i,1); }
+  else if(a==='logout'){ authed=false; sessionStorage.removeItem('mh_admin'); if(sb){ sb.auth.signOut(); sb.removeAllChannels(); orderCh=null; sbAuthed=false; } closePanel(); return; }
+  else if(a==='reset'){ if(!confirm('Erase ALL your edits and go back to the original content in this file?')) return; localStorage.removeItem(KEY); load(); renderSite();
+if(sb){
+  sb.auth.getSession().then(({data:{session}})=>{ if(session){ sbAuthed=true; authed=true; $('#fab').hidden=false; startOrderWatch(); } });
+  pullRemote();
+} updateCount(); renderPanel(); status('Reset done'); return; }
+  else if(a==='refresh-orders'){ loadOrders(); return; }
+  else if(a==='chgpw'){ if(sb){ sbChangePw(); return; } const m=$('#pwmsg'), o=$('#pw0').value, n=$('#pw1').value, c=$('#pw2').value;
+    if(hash(o)!==data.pass) m.textContent='Current password is wrong.'; else if(n.length<6) m.textContent='New password must be at least 6 characters.'; else if(n!==c) m.textContent='New passwords do not match.';
+    else { data.pass=hash(n); save(); m.textContent='Password updated ✓'; $('#pw0').value=$('#pw1').value=$('#pw2').value=''; } return; }
+  else if(a==='export-json'){ download('maweni-hornets-backup.json', JSON.stringify(data), 'application/json'); return; }
+  else if(a==='export-site'){ exportSite(); return; }
+  save(); renderSite(); renderPanel();
+});
+async function sbChangePw(){
+  const m=$('#pwmsg'), n=$('#pw1').value, c=$('#pw2').value;
+  if(n.length<8){ m.textContent='New password must be at least 8 characters.'; return; }
+  if(n!==c){ m.textContent='New passwords do not match.'; return; }
+  const {error}=await sb.auth.updateUser({password:n});
+  m.textContent = error ? error.message : 'Password updated ✓';
+  if(!error) $('#pw1').value=$('#pw2').value='';
+}
+function download(name,text,type){ const u=URL.createObjectURL(new Blob([text],{type})); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1000); }
+function exportSite(){
+  data.v=Date.now(); save();
+  const c=document.documentElement.cloneNode(true);
+  c.querySelector('#site').innerHTML='';
+  c.querySelector('#tabs').innerHTML=''; c.querySelector('#pbody').innerHTML='';
+  c.querySelector('#panel').className='closed';
+  c.querySelector('#loginOv').setAttribute('hidden',''); c.querySelector('#fab').setAttribute('hidden','');
+  c.querySelector('#pstatus').textContent='';
+  c.querySelector('#cartBody').innerHTML=''; c.querySelector('#cart').className='closed';
+  c.querySelector('#seed').textContent=JSON.stringify(data).replace(/</g,'\\u003c');
+  c.style.cssText=''; 
+  download('index.html','<!DOCTYPE html>\n'+c.outerHTML,'text/html');
+  status('Website file downloaded ✓');
+}
+
+/* ---------- start ---------- */
+load(); renderSite();
+if(authed) $('#fab').hidden=false;
+})();
+
+</script>
+</body>
+</html>

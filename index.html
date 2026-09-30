@@ -276,6 +276,9 @@ footer a { display: block; color: #aaa; margin-bottom: 8px; }
 #em{margin-bottom:10px}
 #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2500;background:#25d366;color:#000;padding:12px 20px;font:800 17px "Barlow Condensed",sans-serif;letter-spacing:.5px;box-shadow:0 6px 24px rgba(0,0,0,.5);max-width:92vw;text-align:center}
 
+#pmode{padding:8px 14px;font-size:14px;line-height:1.3;background:#181212;border-bottom:1px solid #3a2e2c;color:#9d8d8a}
+#pmode.ok{color:#7fdc8f}#pmode.bad{color:#ff7b6e}
+
 
 /* ===================== RESPONSIVE ===================== */
 html{-webkit-text-size-adjust:100%}
@@ -418,6 +421,7 @@ header{padding:18px max(5%,calc((100vw - 1400px)/2))}
   </div>
   <aside id="panel" class="closed">
     <div class="p-head"><img alt=""><b>Admin Panel</b><span id="pstatus"></span><button id="pclose" title="Close">✕</button></div>
+    <div id="pmode"></div>
     <div id="tabs"></div>
     <div id="pbody"></div>
   </aside>
@@ -472,17 +476,26 @@ function migrate(){
   if(!data.shop){ data.shop = clone(SEED.shop); if(!data.nav.some(n=>n.href==='#shop')) data.nav.splice(Math.min(3,data.nav.length),0,{label:'Shop',href:'#shop'}); }
 }
 function status(msg, err){ const s=$('#pstatus'); if(!s) return; s.textContent=msg; s.className=err?'err':''; }
+const DEBUG = /[?&]debug\b/.test(location.search);
+function dbg(msg){
+  if(!DEBUG) return; let b=$('#dbg');
+  if(!b){ b=document.createElement('div'); b.id='dbg'; b.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:3000;background:#000;color:#0f0;font:13px/1.4 monospace;padding:10px;border:1px solid #0f0;white-space:pre-wrap;max-height:45vh;overflow:auto'; document.body.appendChild(b); }
+  b.textContent += msg+'\n';
+}
 async function pullRemote(){
-  if(!sb) return;
+  if(!sb){ dbg(window.supabase ? 'NOT CONNECTED: the two Supabase values in this file are empty.' : 'NOT CONNECTED: Supabase library did not load (or values empty).'); return; }
+  dbg('Connected to: '+SB_URL.replace(/^https?:\/\//,''));
   try{
-    const {data:row,error}=await sb.from('site_content').select('data').eq('id',1).maybeSingle();
+    const {data:row,error}=await sb.from('site_content').select('data,updated_at').eq('id',1).maybeSingle();
     if(error) throw error;
+    if(row){ const d=row.data||{}; dbg('Online content found. Saved: '+row.updated_at+'\nHero photo: '+((d.images&&d.images.heroBg)?'set':'empty')+' | Logo: '+((d.images&&d.images.logo)?'custom':'default')+' | Gallery photos: '+(((d.gallery||{}).images||[]).length)+' | Player photos: '+(((d.team||{}).players||[]).filter(p=>p.photo).length)); }
+    else dbg('NO ROW RETURNED: the table is empty or visitors are blocked from reading it.');
     if(row && row.data && row.data.club){
       data=row.data; migrate(); renderSite();
       try{ localStorage.setItem(KEY+'_remote',JSON.stringify(data)); }catch(e){}
       if(!$('#panel').classList.contains('closed')) renderPanel();
     }
-  }catch(e){ console.warn('Could not load online content', e); }
+  }catch(e){ console.warn('Could not load online content', e); dbg('ERROR reading online content: '+(e.message||e)); }
 }
 let pushT;
 function pushRemote(){
@@ -870,7 +883,15 @@ function renderPanel(){
   const b=$('#pbody'), y=b.scrollTop; b.innerHTML = TABS[tab](); b.scrollTop=y;
   $('#panel .p-head img').src = logoSrc();
 }
-const openPanel = () => { if(!authed) return; renderPanel(); $('#panel').classList.remove('closed'); $('#fab').hidden=true; };
+async function checkConn(){
+  const s=$('#pmode'); if(!s) return;
+  if(!sb){ s.textContent='⚠ LOCAL ONLY — edits stay in this browser and other devices will NOT see them (Supabase is not connected in this file).'; s.className='bad'; return; }
+  s.textContent='Checking online connection…'; s.className='';
+  const {error}=await sb.from('site_content').select('id').limit(1);
+  if(error){ s.textContent='⚠ Supabase problem: '+error.message; s.className='bad'; }
+  else { s.textContent='✓ Online — edits are saved to Supabase and shown to every visitor.'; s.className='ok'; }
+}
+const openPanel = () => { if(!authed) return; renderPanel(); $('#panel').classList.remove('closed'); $('#fab').hidden=true; checkConn(); };
 const closePanel = () => { $('#panel').classList.add('closed'); $('#fab').hidden=!authed; };
 
 /* ---------- admin: login ---------- */
@@ -880,7 +901,7 @@ document.addEventListener('click', e=>{
   const n=Date.now(); clicks=clicks.filter(t=>n-t<800); clicks.push(n);
   if(clicks.length>=3){ e.preventDefault(); clicks=[]; authed ? openPanel() : openLogin(); }
 });
-function openLogin(){ $('#em').hidden=!sb; $('#loginOv').hidden=false; $('#loginErr').textContent=''; const i=$('#pw'); i.value=''; setTimeout(()=>i.focus(),50); $('#loginLogo').src=logoSrc(); }
+function openLogin(){ $('#em').hidden=!sb; $('#loginOv').hidden=false; $('#loginErr').textContent=sb?'':'Not connected to Supabase: edits will stay in this browser only.'; const i=$('#pw'); i.value=''; setTimeout(()=>i.focus(),50); $('#loginLogo').src=logoSrc(); }
 $('#loginCancel').onclick = () => $('#loginOv').hidden=true;
 $('#loginForm').onsubmit = e => {
   e.preventDefault();
